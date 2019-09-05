@@ -1,0 +1,405 @@
+* Functions/APIs in the Standard
+#+begin_src shell :dir ~/Repositories/pmix/pmix-standard/ :results output table replace :colnames yes
+echo "Function_Name Source_File"
+grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort --ignore-case
+#+end_src
+
+#+tblname: standards_funcs
+#+RESULTS:
+| Function_Name                       | Source_File                   |
+| PMIx_Abort                          | ./Chap_API_Proc_Mgmt.tex      |
+| PMIx_Allocation_request             | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Allocation_request_nb          | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Alloc_directive_string         | ./Chap_API_Struct.tex         |
+| PMIx_Commit                         | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Connect                        | ./Chap_API_Proc_Mgmt.tex      |
+| pmix_connection_cbfunc_t            | ./Chap_API_Struct.tex         |
+| PMIx_Connect_nb                     | ./Chap_API_Proc_Mgmt.tex      |
+| pmix_credential_cbfunc_t            | ./Chap_API_Struct.tex         |
+| PMIX_DATA_BUFFER_CONSTRUCT          | ./Chap_API_Data_Mgmt.tex      |
+| PMIX_DATA_BUFFER_CREATE             | ./Chap_API_Data_Mgmt.tex      |
+| PMIX_DATA_BUFFER_DESTRUCT           | ./Chap_API_Data_Mgmt.tex      |
+| PMIX_DATA_BUFFER_LOAD               | ./Chap_API_Data_Mgmt.tex      |
+| PMIX_DATA_BUFFER_RELEASE            | ./Chap_API_Data_Mgmt.tex      |
+| PMIX_DATA_BUFFER_UNLOAD             | ./Chap_API_Data_Mgmt.tex      |
+| PMIx_Data_copy                      | ./Chap_API_Data_Mgmt.tex      |
+| PMIx_Data_copy_payload              | ./Chap_API_Data_Mgmt.tex      |
+| PMIx_Data_pack                      | ./Chap_API_Data_Mgmt.tex      |
+| PMIx_Data_print                     | ./Chap_API_Data_Mgmt.tex      |
+| PMIx_Data_range_string              | ./Chap_API_Struct.tex         |
+| PMIx_Data_type_string               | ./Chap_API_Struct.tex         |
+| PMIx_Data_unpack                    | ./Chap_API_Data_Mgmt.tex      |
+| PMIx_Deregister_event_handler       | ./Chap_API_Event.tex          |
+| PMIx_Disconnect                     | ./Chap_API_Proc_Mgmt.tex      |
+| PMIx_Disconnect_nb                  | ./Chap_API_Proc_Mgmt.tex      |
+| pmix_dmodex_response_fn_t           | ./Chap_API_Struct.tex         |
+| PMIx_Error_string                   | ./Chap_API_Struct.tex         |
+| pmix_event_notification_cbfunc_fn_t | ./Chap_API_Struct.tex         |
+| pmix_evhdlr_reg_cbfunc_t            | ./Chap_API_Struct.tex         |
+| PMIx_Fence                          | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Fence_nb                       | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Finalize                       | ./Chap_API_Init.tex           |
+| PMIx_generate_ppn                   | ./Chap_API_Server.tex         |
+| PMIx_generate_regex                 | ./Chap_API_Server.tex         |
+| PMIx_Get                            | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Get_credential                 | ./Chap_API_Security.tex       |
+| PMIx_Get_nb                         | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Get_version                    | ./Chap_API_Init.tex           |
+| PMIx_Group_construct                | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_construct_nb             | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_destruct                 | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_destruct_nb              | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_invite                   | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_invite_nb                | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_join                     | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_join_nb                  | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_leave                    | ./Chap_API_Sets_Groups.tex    |
+| PMIx_Group_leave_nb                 | ./Chap_API_Sets_Groups.tex    |
+| pmix_hdlr_reg_cbfunc_t              | ./Chap_API_Struct.tex         |
+| pmix_info_cbfunc_t                  | ./Chap_API_Struct.tex         |
+| PMIx_Info_directives_string         | ./Chap_API_Struct.tex         |
+| PMIx_Init                           | ./Chap_API_Init.tex           |
+| PMIx_Initialized                    | ./Chap_API_Init.tex           |
+| pmix_iof_cbfunc_t                   | ./Chap_API_Struct.tex         |
+| PMIx_IOF_channel_string             | ./Chap_API_Struct.tex         |
+| PMIx_IOF_deregister                 | ./Chap_API_Proc_Mgmt.tex      |
+| PMIx_IOF_pull                       | ./Chap_API_Proc_Mgmt.tex      |
+| PMIx_IOF_push                       | ./Chap_API_Proc_Mgmt.tex      |
+| PMIx_Job_control                    | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Job_control_nb                 | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Log                            | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Log_nb                         | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Lookup                         | ./Chap_API_Key_Value_Mgmt.tex |
+| pmix_lookup_cbfunc_t                | ./Chap_API_Struct.tex         |
+| PMIx_Lookup_nb                      | ./Chap_API_Key_Value_Mgmt.tex |
+| pmix_modex_cbfunc_t                 | ./Chap_API_Struct.tex         |
+| pmix_notification_fn_t              | ./Chap_API_Struct.tex         |
+| PMIx_Notify_event                   | ./Chap_API_Event.tex          |
+| pmix_op_cbfunc_t                    | ./Chap_API_Struct.tex         |
+| PMIx_Persistence_string             | ./Chap_API_Struct.tex         |
+| PMIx_Process_monitor                | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Process_monitor_nb             | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Proc_state_string              | ./Chap_API_Struct.tex         |
+| PMIx_Publish                        | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Publish_nb                     | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Put                            | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Query_info_nb                  | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Register_attributes            | ./Chap_API_Server.tex         |
+| PMIx_Register_event_handler         | ./Chap_API_Event.tex          |
+| pmix_release_cbfunc_t               | ./Chap_API_Struct.tex         |
+| PMIx_Resolve_nodes                  | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Resolve_peers                  | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Scope_string                   | ./Chap_API_Struct.tex         |
+| pmix_server_abort_fn_t              | ./Chap_API_Server.tex         |
+| pmix_server_alloc_fn_t              | ./Chap_API_Server.tex         |
+| pmix_server_client_connected_fn_t   | ./Chap_API_Server.tex         |
+| pmix_server_client_finalized_fn_t   | ./Chap_API_Server.tex         |
+| PMIx_server_collect_inventory       | ./Chap_API_Server.tex         |
+| pmix_server_connect_fn_t            | ./Chap_API_Server.tex         |
+| PMIx_server_deliver_inventory       | ./Chap_API_Server.tex         |
+| PMIx_server_deregister_client       | ./Chap_API_Server.tex         |
+| pmix_server_deregister_events_fn_t  | ./Chap_API_Server.tex         |
+| PMIx_server_deregister_fabric       | ./Chap_API_Scheduler.tex      |
+| PMIx_server_deregister_nspace       | ./Chap_API_Server.tex         |
+| pmix_server_disconnect_fn_t         | ./Chap_API_Server.tex         |
+| PMIx_server_dmodex_request          | ./Chap_API_Server.tex         |
+| pmix_server_dmodex_req_fn_t         | ./Chap_API_Server.tex         |
+| pmix_server_fencenb_fn_t            | ./Chap_API_Server.tex         |
+| PMIx_server_finalize                | ./Chap_API_Init.tex           |
+| pmix_server_get_cred_fn_t           | ./Chap_API_Server.tex         |
+| PMIx_server_get_index               | ./Chap_API_Scheduler.tex      |
+| PMIx_server_get_vertex_info         | ./Chap_API_Scheduler.tex      |
+| PMIx_server_init                    | ./Chap_API_Init.tex           |
+| PMIx_server_IOF_deliver             | ./Chap_API_Server.tex         |
+| pmix_server_iof_fn_t                | ./Chap_API_Server.tex         |
+| pmix_server_job_control_fn_t        | ./Chap_API_Server.tex         |
+| pmix_server_listener_fn_t           | ./Chap_API_Server.tex         |
+| pmix_server_log_fn_t                | ./Chap_API_Server.tex         |
+| pmix_server_lookup_fn_t             | ./Chap_API_Server.tex         |
+| pmix_server_module_t                | ./Chap_API_Server.tex         |
+| pmix_server_monitor_fn_t            | ./Chap_API_Server.tex         |
+| pmix_server_notify_event_fn_t       | ./Chap_API_Server.tex         |
+| pmix_server_publish_fn_t            | ./Chap_API_Server.tex         |
+| pmix_server_query_fn_t              | ./Chap_API_Server.tex         |
+| PMIx_server_register_client         | ./Chap_API_Server.tex         |
+| pmix_server_register_events_fn_t    | ./Chap_API_Server.tex         |
+| PMIx_server_register_fabric         | ./Chap_API_Scheduler.tex      |
+| PMIx_server_register_nspace         | ./Chap_API_Server.tex         |
+| PMIx_server_setup_application       | ./Chap_API_Server.tex         |
+| PMIx_server_setup_fork              | ./Chap_API_Server.tex         |
+| PMIx_server_setup_local_support     | ./Chap_API_Server.tex         |
+| pmix_server_spawn_fn_t              | ./Chap_API_Server.tex         |
+| pmix_server_stdin_fn_t              | ./Chap_API_Server.tex         |
+| pmix_server_tool_connection_fn_t    | ./Chap_API_Server.tex         |
+| pmix_server_unpublish_fn_t          | ./Chap_API_Server.tex         |
+| pmix_server_validate_cred_fn_t      | ./Chap_API_Server.tex         |
+| pmix_setup_application_cbfunc_t     | ./Chap_API_Struct.tex         |
+| PMIx_Spawn                          | ./Chap_API_Proc_Mgmt.tex      |
+| pmix_spawn_cbfunc_t                 | ./Chap_API_Struct.tex         |
+| PMIx_Spawn_nb                       | ./Chap_API_Proc_Mgmt.tex      |
+| PMIx_Store_internal                 | ./Chap_API_Key_Value_Mgmt.tex |
+| pmix_tool_connection_cbfunc_t       | ./Chap_API_Struct.tex         |
+| PMIx_tool_connect_to_server         | ./Chap_API_Init.tex           |
+| PMIx_tool_finalize                  | ./Chap_API_Init.tex           |
+| PMIx_tool_init                      | ./Chap_API_Init.tex           |
+| PMIx_Unpublish                      | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Unpublish_nb                   | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Validate_credential            | ./Chap_API_Security.tex       |
+| pmix_validation_cbfunc_t            | ./Chap_API_Struct.tex         |
+| pmix_value_cbfunc_t                 | ./Chap_API_Struct.tex         |
+* Functions/APIs in our Notes
+** Automated
+- Grab a txt export of the RFC notes from Google drive: https://docs.google.com/document/d/1VUpflvUpmyBp_83cycPvdnSj_BwiGDowh9j4hZCOLBk/edit?usp=sharing
+- Get rid of the carriage returns that Google Drive adds
+#+begin_src shell
+dos2unix ./RFC_Use_Cases.txt
+#+end_src
+
+- Make sure we are grabbing all of the relevant pmix capitalization prefixes
+#+begin_src shell :results output list replace
+grep -ie 'pmix_' ./RFC_Use_Cases.txt | sed -E 's/^[ ]*\*[ ]*//' \
+  | sort --ignore-case | uniq | grep -v -Ee '(PMIX|pmix|PMIx)_'
+#+end_src
+
+#+RESULTS:
+
+- Extract the interfaces
+#+begin_src shell :results output table replace
+grep -oEe '^[ ]*\*[ ]*(PMIx|pmix|Pmix|PMIX_DATA_BUFFER)_[a-zA-Z_]+' ./RFC_Use_Cases.txt \
+  | sed -E 's/^[ ]*\*[ ]*//' \
+  | sort --ignore-case | uniq
+#+end_src
+
+#+tblname: rfc_funcs
+#+RESULTS:
+| PMIx_Alloc                      |
+| pmix_credential_cbfunc_t        |
+| PMIX_DATA_BUFFER_CONSTRUCT      |
+| PMIX_DATA_BUFFER_CREATE         |
+| PMIX_DATA_BUFFER_DESTRUCT       |
+| PMIX_DATA_BUFFER_RELEASE        |
+| PMIx_Data_copy                  |
+| PMIx_Data_copy_payload          |
+| PMIx_Data_pack                  |
+| PMIx_Data_print                 |
+| PMIx_Data_unpack                |
+| PMIx_Deregister_event_handler   |
+| PMIx_Forward_envars             |
+| PMIx_Get                        |
+| PMIx_Get_credential             |
+| PMIx_Group_construct            |
+| PMIx_Group_construct_nb         |
+| PMIx_Group_destruct             |
+| PMIx_Group_invite               |
+| PMIx_Group_invite_nb            |
+| PMIx_Group_join                 |
+| PMIx_Group_join_nb              |
+| PMIx_Group_leave                |
+| PMIx_Group_leave_nb             |
+| PMIx_Heartbeat                  |
+| PMIx_Init                       |
+| pmix_iof_cbfunc_t               |
+| PMIx_IOF_deregister             |
+| PMIx_IOF_pull                   |
+| PMIx_IOF_push                   |
+| PMIx_Job_control_nb             |
+| PMIx_Log                        |
+| PMIx_Notify_event               |
+| PMIx_Process_monitor_nb         |
+| PMIx_Put                        |
+| PMIx_Query_info_nb              |
+| PMIx_Register_event_handler     |
+| PMIx_server_collect_inventory   |
+| PMIx_server_init                |
+| PMIx_server_IOF_deliver         |
+| pmix_server_iof_fn_t            |
+| pmix_server_job_control_fn_t    |
+| Pmix_server_monitor_fn_t        |
+| PMIx_server_setup_application   |
+| PMIx_server_setup_local_support |
+| Pmix_server_stdin_fn_t          |
+| pmix_server_validate_cred_fn_t  |
+| Pmix_setup_application_cbfunc_t |
+| PMIx_Spawn                      |
+| pmix_status_t                   |
+| PMIx_Validate_credential        |
+| pmix_validation_cbfunc_t        |
+* Comparison
+#+begin_src python :var val=1 :var standards_funcs=standards_funcs rfc_funcs=rfc_funcs :exports both :results output
+import itertools
+
+standards_funcs = set([ x[0] for x in standards_funcs[1:]])
+rfc_funcs = set([ x[0] for x in rfc_funcs])
+covered_by_rfc = sorted(standards_funcs.intersection(rfc_funcs))
+not_covered_by_rfc = sorted(standards_funcs.difference(rfc_funcs))
+in_rfc_not_in_std = sorted(rfc_funcs.difference(standards_funcs))
+def prt(x):
+  for func in x:
+    print("\t", func)
+
+print("Percent Coverage: {:.1f}%".format(len(covered_by_rfc) * 100 / len(standards_funcs)))
+
+print("Functions covered by RFC notes:")
+prt(covered_by_rfc)
+print("Functions not covered by RFC notes:")
+prt(not_covered_by_rfc)
+print("Functions in RFC notes but not in Standard:")
+prt(in_rfc_not_in_std)
+
+#return list(itertools.zip_longest(not_covered_by_rfc, covered_by_rfc, in_rfc_not_in_std, fillvalue=""))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Percent Coverage: 32.1%
+Functions covered by RFC notes:
+	 PMIX_DATA_BUFFER_CONSTRUCT
+	 PMIX_DATA_BUFFER_CREATE
+	 PMIX_DATA_BUFFER_DESTRUCT
+	 PMIX_DATA_BUFFER_RELEASE
+	 PMIx_Data_copy
+	 PMIx_Data_copy_payload
+	 PMIx_Data_pack
+	 PMIx_Data_print
+	 PMIx_Data_unpack
+	 PMIx_Deregister_event_handler
+	 PMIx_Get
+	 PMIx_Get_credential
+	 PMIx_Group_construct
+	 PMIx_Group_construct_nb
+	 PMIx_Group_destruct
+	 PMIx_Group_invite
+	 PMIx_Group_invite_nb
+	 PMIx_Group_join
+	 PMIx_Group_join_nb
+	 PMIx_Group_leave
+	 PMIx_Group_leave_nb
+	 PMIx_IOF_deregister
+	 PMIx_IOF_pull
+	 PMIx_IOF_push
+	 PMIx_Init
+	 PMIx_Job_control_nb
+	 PMIx_Log
+	 PMIx_Notify_event
+	 PMIx_Process_monitor_nb
+	 PMIx_Put
+	 PMIx_Query_info_nb
+	 PMIx_Register_event_handler
+	 PMIx_Spawn
+	 PMIx_Validate_credential
+	 PMIx_server_IOF_deliver
+	 PMIx_server_collect_inventory
+	 PMIx_server_init
+	 PMIx_server_setup_application
+	 PMIx_server_setup_local_support
+	 pmix_credential_cbfunc_t
+	 pmix_iof_cbfunc_t
+	 pmix_server_iof_fn_t
+	 pmix_server_job_control_fn_t
+	 pmix_server_validate_cred_fn_t
+	 pmix_validation_cbfunc_t
+Functions not covered by RFC notes:
+	 PMIX_DATA_BUFFER_LOAD
+	 PMIX_DATA_BUFFER_UNLOAD
+	 PMIx_Abort
+	 PMIx_Alloc_directive_string
+	 PMIx_Allocation_request
+	 PMIx_Allocation_request_nb
+	 PMIx_Commit
+	 PMIx_Connect
+	 PMIx_Connect_nb
+	 PMIx_Data_range_string
+	 PMIx_Data_type_string
+	 PMIx_Disconnect
+	 PMIx_Disconnect_nb
+	 PMIx_Error_string
+	 PMIx_Fence
+	 PMIx_Fence_nb
+	 PMIx_Finalize
+	 PMIx_Get_nb
+	 PMIx_Get_version
+	 PMIx_Group_destruct_nb
+	 PMIx_IOF_channel_string
+	 PMIx_Info_directives_string
+	 PMIx_Initialized
+	 PMIx_Job_control
+	 PMIx_Log_nb
+	 PMIx_Lookup
+	 PMIx_Lookup_nb
+	 PMIx_Persistence_string
+	 PMIx_Proc_state_string
+	 PMIx_Process_monitor
+	 PMIx_Publish
+	 PMIx_Publish_nb
+	 PMIx_Register_attributes
+	 PMIx_Resolve_nodes
+	 PMIx_Resolve_peers
+	 PMIx_Scope_string
+	 PMIx_Spawn_nb
+	 PMIx_Store_internal
+	 PMIx_Unpublish
+	 PMIx_Unpublish_nb
+	 PMIx_generate_ppn
+	 PMIx_generate_regex
+	 PMIx_server_deliver_inventory
+	 PMIx_server_deregister_client
+	 PMIx_server_deregister_fabric
+	 PMIx_server_deregister_nspace
+	 PMIx_server_dmodex_request
+	 PMIx_server_finalize
+	 PMIx_server_get_index
+	 PMIx_server_get_vertex_info
+	 PMIx_server_register_client
+	 PMIx_server_register_fabric
+	 PMIx_server_register_nspace
+	 PMIx_server_setup_fork
+	 PMIx_tool_connect_to_server
+	 PMIx_tool_finalize
+	 PMIx_tool_init
+	 pmix_connection_cbfunc_t
+	 pmix_dmodex_response_fn_t
+	 pmix_event_notification_cbfunc_fn_t
+	 pmix_evhdlr_reg_cbfunc_t
+	 pmix_hdlr_reg_cbfunc_t
+	 pmix_info_cbfunc_t
+	 pmix_lookup_cbfunc_t
+	 pmix_modex_cbfunc_t
+	 pmix_notification_fn_t
+	 pmix_op_cbfunc_t
+	 pmix_release_cbfunc_t
+	 pmix_server_abort_fn_t
+	 pmix_server_alloc_fn_t
+	 pmix_server_client_connected_fn_t
+	 pmix_server_client_finalized_fn_t
+	 pmix_server_connect_fn_t
+	 pmix_server_deregister_events_fn_t
+	 pmix_server_disconnect_fn_t
+	 pmix_server_dmodex_req_fn_t
+	 pmix_server_fencenb_fn_t
+	 pmix_server_get_cred_fn_t
+	 pmix_server_listener_fn_t
+	 pmix_server_log_fn_t
+	 pmix_server_lookup_fn_t
+	 pmix_server_module_t
+	 pmix_server_monitor_fn_t
+	 pmix_server_notify_event_fn_t
+	 pmix_server_publish_fn_t
+	 pmix_server_query_fn_t
+	 pmix_server_register_events_fn_t
+	 pmix_server_spawn_fn_t
+	 pmix_server_stdin_fn_t
+	 pmix_server_tool_connection_fn_t
+	 pmix_server_unpublish_fn_t
+	 pmix_setup_application_cbfunc_t
+	 pmix_spawn_cbfunc_t
+	 pmix_tool_connection_cbfunc_t
+	 pmix_value_cbfunc_t
+Functions in RFC notes but not in Standard:
+	 PMIx_Alloc
+	 PMIx_Forward_envars
+	 PMIx_Heartbeat
+	 Pmix_server_monitor_fn_t
+	 Pmix_server_stdin_fn_t
+	 Pmix_setup_application_cbfunc_t
+	 pmix_status_t
+#+end_example

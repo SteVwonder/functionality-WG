@@ -1,0 +1,884 @@
+Use-cases Documented in RFCs (https://github.com/pmix/RFCs):
+Template
+* Summary: TODO
+   * More Details (TODO)
+* PMIx Extensions
+   * Interfaces
+      * TODO
+   * Macros
+      * TODO
+   * Attributes/Directives
+      * TODO
+   * Status Codes
+      * TODO
+   * Keys
+      * TODO
+* Use-Cases:
+   * TODO
+RFC0001
+* Summary: Connecting into PMIx
+   * Referenced (but not directly supported by this RFC) interactions include:
+      * Querying
+         * Job state
+         * System state
+            * Scheduling queues
+            * Estimated allocation time for various requests
+      * Job alloc/launch
+* PMIx Extensions
+   * Interfaces
+      * TODO
+   * Attributes
+      * TODO
+   * Keys
+      * TODO
+* Use-cases:
+   * Everything
+
+
+RFC0002
+* Summary: Event notification (pub/sub)
+   * Job-specific events: (PMIX_EVENT_JOB_LEVEL)
+      * debugger attached
+      * process failure
+   * Environment events: (PMIX_EVENT_ENVIRO_LEVEL)
+      * ECC errors
+      * temperature excursions
+   * Errors detected by clients/peers
+      * Network fabric manager detects data corruption
+* PMIx Interfaces
+   * Interfaces
+      * PMIx_Register_event_handler
+      * PMIx_Deregister_event_handler
+      * PMIx_Notify_event
+   * Attributes
+      * TODO
+   * Keys
+      * TODO
+* Use-cases:
+   * Debuggers
+   * Fault-Tolerance
+      * ULFM - which OpenMPI will pull in eventually
+         * https://bitbucket.org/icldistcomp/ulfm2/src/ulfm/
+      * MCEM - Multi-Level Cooperative Exception Model
+         * TODO: link
+   * Multi-library coordination of event actions
+      * MPI & OpenMP: Ongoing research topic, no implementation reference
+      * UTK might have some math libraries, etc that use this
+         * TODO: link
+      * TODO: any others users?
+RFC0003
+* Summary: Subdividing jobs into "groups"
+* PMIx Extensions
+   * Interfaces
+      * TODO
+   * Attributes
+      * TODO
+   * Keys
+      * TODO
+* Use-cases:
+   * Dynamic/malleable systems/runtimes
+      * MPI Sessions: https://github.com/mpi-forum/mpi-issues/issues/103
+RFC0005
+* Summary: Flexible Allocation
+   * Grow/shrink
+   * Temporarily lend/reacquire
+* PMIx Extensions
+   * Interfaces
+      * TODO
+   * Attributes
+      * TODO
+   * Keys
+      * TODO
+* Use-Cases:
+   * Fault-Tolerance
+   * Dynamic/malleable systems/runtimes
+      * MPI Sessions?
+RFC0009
+* Summary: Update semantics of PMIx_Get/Put
+   * pmix prefix reserved for pre-populated keys
+   * PMIx_Put must have a key that doesn’t start with pmix
+* PMIx Extensions
+   * Interfaces (affected, not added)
+      * PMIx_Get
+      * PMIx_Put
+   * Keys
+      * pmix.*
+* Use-Cases:
+   * N/A, change done for performance
+RFC0010
+* Summary:
+   * Allows connecting to a PMIX instance that isn't an ancestor of the current process
+   * Extends PMIx_Query to be non-blocking and support MPIR-like queries for application process information (pids, executable names, hostnames)
+   * Adds support for logging to a data store or typical output channels (e.g., stderr, syslog, etc)
+* PMIx Extensions
+   * Interfaces
+      * TODO
+   * Attributes
+      * TODO
+   * Keys
+      * TODO
+* Use-cases:
+   * Debuggers
+RFC0011
+* Summary: Security Plugin Framework (PSEC)
+   * Mainly deals with a refactoring of existing functionality into the PSEC framework which is not documented in the standards document, but I’ll use this space to document the security interfaces/functionality that these plugins provide
+* PMIx Extensions
+   * Interfaces
+      * PMIx_Get_credential
+      * PMIx_Validate_credential
+   * Attributes
+      * pmix.sec.ctype
+      * pmix.sec.key
+* Use-Cases:
+   * Tools?
+   * TODO
+RFC0012
+* Summary: Support for RM and network library interactions
+   * Internal processes for pushing bookmarking data into the job so that processes don’t have to “think” and can immediately begin communication
+   * Part of the "Instant On" initiative relies on establishing a partnership between the resource manager (RM) and the networking library that allows the combination to fully setup the messaging environment prior to spawn of an application's processes. Completing this procedure enables applications to communicate without discovery and exchange of network endpoint information.
+   * Preconditioning the application for network operations typically involves obtaining a security token that must be used by each application process when communicating to another process in the same job. Some network libraries generate this token algorithmically, while others may need to obtain a token from a central server. Precondition values are typically passed to application processes as environmental variables that are recognized by the network library when initialized by the process. Thus, the PMIx_server_setup_application API takes the application's nspace, and returns an array of pmix_info_t structures. The keys may consist of PMIX_(UN)SET_ENVAR, which will change the environment of the spawned processes.
+   * The "Instant On" initiative requires that a process know how to communicate to each other at startup. One method of accomplishing this is to "preload" the local network library with the location of all processes in that application, thus allowing the library to compute the required address information for any process. The PMIx_server_setup_local_support API is called by the RM prior to fork/exec of any local process from the given application.
+* PMIx Extensions
+   * Interfaces
+      * PMIx_server_setup_application
+      * PMIx_server_setup_local_support
+   * Attributes
+      * TODO
+   * Keys
+      * PMIX_APP_MAP_TYPE
+      * PMIX_APP_MAP_REGEX
+      * PMIX_RM_NAME
+      * PMIX_RM_VERSION
+      * PMIX_SET_ENVAR
+      * PMIX_UNSET_ENVAR
+* Use-Cases:
+   * “Instant On” wireup/network communication
+      * This RFC also documents other changes necessary to support this use-case (calls into the PNET framework)
+   * Execution “personalities”?
+* Questions:
+   * How is this functionality triggered?  Does the network library call into PMIx somewhere to register the env vars to change?
+RFC0013
+* Summary: Enable applications to query time (seconds) remaining in their allocation
+   * Replacement for/based on libyogrt
+* PMIx Extensions
+   * Keys
+      * PMIX_TIME_REMAINING
+         * Passed to PMIx_Query
+* Use-Cases:
+   * Everything
+      * Optional
+
+
+
+
+
+
+
+
+
+
+RFC0015
+* Summary: Job Control and Monitoring
+   * New job control interface allows users to pause, resume, cancel, kill, restart, checkpoint, or signal a job
+   * Users can request emails for particular notifications
+   * Users can request monitoring of a running application (à la io-watchdog)
+      * Polling output file size
+      * Application heartbeat
+* PMIx Extensions
+   * Interfaces
+      * Client-side
+         * PMIx_Job_control_nb
+         * PMIx_Process_monitor_nb
+      * Server-side
+         * pmix_server_job_control_fn_t
+         * Pmix_server_monitor_fn_t
+   * Macros
+      * PMIx_Heartbeat
+   * Attributes/Directives
+      * TODO: go through and group attributes based on functionality
+         * Checkpointing
+         * File monitoring
+         * Heartbeat
+         * etc
+      * PMIX_JOB_CTRL_ID
+         * "pmix.jctrl.id"         // (char*) provide a string identifier for this request
+      * PMIX_JOB_CTRL_PAUSE
+         * "pmix.jctrl.pause"      // (bool) pause the specified processes
+      * PMIX_JOB_CTRL_RESUME
+         * "pmix.jctrl.resume"     // (bool) "un-pause" the specified processes
+      * PMIX_JOB_CTRL_CANCEL
+         * "pmix.jctrl.cancel"     // (char*) cancel the specified request
+         * //  (NULL => cancel all requests from this requestor)
+      * PMIX_JOB_CTRL_KILL
+         * "pmix.jctrl.kill"       // (bool) forcibly terminate the specified processes and cleanup
+      * PMIX_JOB_CTRL_RESTART
+         * "pmix.jctrl.restart"    // (char*) restart the specified processes using the given checkpoint ID
+      * PMIX_JOB_CTRL_CHECKPOINT
+         * "pmix.jctrl.ckpt"       // (char*) checkpoint the specified processes and assign the given ID to it
+      * PMIX_JOB_CTRL_CHECKPOINT_EVENT
+         * “pmix.jctrl.ckptev"     // (pmix_status_t) use given event code to trigger process checkpoint
+      * PMIX_JOB_CTRL_CHECKPOINT_SIGNAL
+         * "pmix.jctrl.ckptsig"    // (int) use the given signal to trigger process checkpoint
+      * PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT
+         * "pmix.jctrl.ckptsig"    // (int) time in seconds to wait for checkpoint to complete
+      * PMIX_JOB_CTRL_SIGNAL
+         * "pmix.jctrl.sig"        // (int) send given signal to specified processes
+      * PMIX_JOB_CTRL_PROVISION
+         * "pmix.jctrl.pvn"        // (char*) regex identifying nodes that are to be provisioned
+      * PMIX_JOB_CTRL_PROVISION_IMAGE
+         * "pmix.jctrl.pvnimg"     // (char*) name of the image that is to be provisioned
+      * PMIX_JOB_CTRL_PREEMPTIBLE
+         * "pmix.jctrl.preempt"    // (bool) declare that job can be pre-empted
+      * PMIX_JOB_CTRL_CHECKPOINT_METHOD
+         * "pmix.jctrl.ckmethod"   // (pmix_data_array_t) array of pmix_info_t declaring each method and value supported by this application
+      * PMIX_MONITOR_ID
+         * "pmix.monitor.id"       // (char*) provide a string identifier for this request
+      * PMIX_MONITOR_CANCEL
+         * "pmix.monitor.cancel"   // (char*) identifier to be canceled (NULL = cancel all monitoring for this process
+      * PMIX_MONITOR_APP_CONTROL        
+         * "pmix.monitor.appctrl"  // (bool) the application desires to control the response to a monitoring event
+      * PMIX_MONITOR_HEARTBEAT
+         * "pmix.monitor.mbeat"    // (void) register to have the server monitor the requestor for heartbeats
+      * PMIX_SEND_HEARTBEAT
+         * "pmix.monitor.beat"     // (void) send heartbeat to local server
+      * PMIX_MONITOR_HEARTBEAT_TIME
+         * "pmix.monitor.btime"    // (uint32_t) time in seconds before declaring heartbeat missed
+      * PMIX_MONITOR_HEARTBEAT_DROPS
+         * "pmix.monitor.bdrop"    // (uint32_t) number of heartbeats that can be missed before generating the event (defaults to alert on first drop)
+      * PMIX_MONITOR_FILE
+         * "pmix.monitor.fmon"     // (char*) register to monitor file for signs of life
+      * PMIX_MONITOR_FILE_SIZE
+         * "pmix.monitor.fsize"    // (bool) monitor size of given file is growing to determine app is running
+      * PMIX_MONITOR_FILE_ACCESS
+         * "pmix.monitor.faccess"  // (char*) monitor time since last access of given file to determine app is running
+      * PMIX_MONITOR_FILE_MODIFY
+         * "pmix.monitor.fmod"     // (char*) monitor time since last modified of given file to determine app is running
+      * PMIX_MONITOR_FILE_CHECK_TIME
+         * "pmix.monitor.ftime"    // (uint32_t) time in seconds between checking file
+      * PMIX_MONITOR_FILE_DROPS
+         * "pmix.monitor.fdrop"    // (uint32_t) number of file checks that can be missed before generating the event
+      * PMIX_SERVER_ENABLE_MONITORING
+         * "pmix.srv.monitor"      // (bool) Enable PMIx internal monitoring by server
+   * Status Codes
+      * PMIX_JCTRL_CHECKPOINT
+         * monitored by client to trigger checkpoint operation
+      * PMIX_JCTRL_CHECKPOINT_COMPLETE
+         * sent by client and monitored by server to notify that requested checkpoint operation has completed
+      * PMIX_JCTRL_PREEMPT_ALERT
+         * monitored by client to detect RM intends to preempt
+      * PMIX_MONITOR_HEARTBEAT_ALERT
+      * PMIX_MONITOR_FILE_ALERT
+* Use-Cases:
+   * Workflow managers controlling jobs via a common interface (rather than wrapping every RMs unique CLIs)
+      * The broader use-case can probably include job submission
+   * Interface for monitoring job liveness (i.e., alternative to io-watchdog)
+      * The broader use-case probably being job event notification (i.e. job completed, hung, started, etc).
+RFC0017
+* Summary: Sharing information across different programming environments to coordinate actions. 
+   * Identifying Active Programming Models: Provide a mechanism by which each library/programming model can determine that the other library/programming model is in operation. It was noted that OpenMP is looking for envars to indicate that MPI is active, but this isn't terribly reliable as MPI envars change over time and with releases. Also, the fact that an envar is present doesn't mean that MPI_Init was called since RMs routinely set envars "just in case" the application needs them.
+   * Communicate Dynamic Changes: Allow libraries to share knowledge of each other's resources and intended resource utilization. For example, OMP would benefit from knowing if the MPI layer is using pthreads. Likewise, the MPI layer might be able to take advantage of the OMP worker thread pool if it knew it existed
+   * Facilitate Hybrid Programming: Give users the ability to experiment as the community really doesn't know the "best practices" for hybrid applications at this point. We shouldn't design interfaces that are rigid to current practices as these may not prove to be the best long-term.
+   * New requirement on PMIx implementations that they:
+* always inspect any provided info array during PMIx_Init to see if model-related directives have been provided, and
+* generate the corresponding event should those model-related directives be present
+* directives passed to each invocation of PMIx_Init must be cached. Subsequent calls to PMIx_Init must check for conflicting directives (i.e., duplicate keys that contain different values) - these shall result in return of an error. Duplicate keys that contain the same value shall be ignored.
+* registered PMIx event handler will be called from within the PMIx progress thread - and not the thread context that originally registered for it.
+   * * PMIx Extensions
+   * Interfaces (affected)
+      * PMIx_Init
+   * Attributes/Directives
+      * PMIX_PROGRAMMING_MODEL             
+         *  "pmix.pgm.model"        // (char*) programming model being initialized (e.g., "MPI" or "OpenMP")
+      * PMIX_MODEL_LIBRARY_NAME             
+         * "pmix.mdl.name"         // (char*) programming model implementation ID (e.g., "OpenMPI" or "MPICH")
+      * PMIX_MODEL_LIBRARY_VERSION          
+         * "pmix.mdl.vrs"          // (char*) programming model version string (e.g., "2.1.1")
+      * PMIX_THREADING_MODEL                
+         * "pmix.threads"          // (char*) threading model used (e.g., "pthreads")
+      * PMIX_MODEL_NUM_THREADS              
+         * "pmix.mdl.nthrds"           // (uint64_t) number of active threads being used by the model
+      * PMIX_MODEL_NUM_CPUS                 
+         * "pmix.mdl.ncpu"             // (uint64_t) number of cpus being used by the model
+      * PMIX_MODEL_CPU_TYPE                
+         *  "pmix.mdl.cputype"          // (char*) granularity - "hwthread", "core", etc.
+      * PMIX_MODEL_PHASE_NAME              
+         *  "pmix.mdl.phase"            // (char*) user-assigned name for a phase in the application  //         execution - e.g., "cfd reduction"
+      * PMIX_MODEL_PHASE_TYPE               
+         * "pmix.mdl.ptype"            // (char*) type of phase being executed - e.g., "matrix multiply"
+      * PMIX_MODEL_AFFINITY_POLICY          
+         * "pmix.mdl.tap"              // (char*) thread affinity policy - e.g.: "master" (thread co-located with master thread), "close" (thread located on cpu close to master thread), "spread" (threads load-balanced across available cpus)
+   * Status Codes
+      * PMIX_MODEL_DECLARED      
+         * (PMIX_ERR_OP_BASE - 17)
+      * PMIX_MODEL_RESOURCES                
+         * (PMIX_ERR_OP_BASE - 21)     // model resource usage has changed
+      * PMIX_OPENMP_PARALLEL_ENTERED        
+         * (PMIX_ERR_OP_BASE - 22)     // an OpenMP parallel region has been entered
+      * PMIX_OPENMP_PARALLEL_EXITED        
+         *  (PMIX_ERR_OP_BASE - 23)     // an OpenMP parallel region has completed
+   * Keys
+      * TODO
+* Use-Cases:
+   * Coordination Across Programming Models (OpenMP and MPI)
+      * PGAS & MPI, etc
+   * Inter-library coordination
+
+
+
+
+RFC0018
+* Summary: Use-cases for extensions to the behavior of the event notification system, especially in the registration area include:
+* Hybrid applications (i.e., applications that utilize more than one programming model, such as an MPI application that also uses OpenMP) are growing in popularity. Hybrid applications would benefit from cross-library coordination. Coordinating with a threading library such as OpenMP subsequently creates the need for separate event handlers for threads of the same process, thus requiring support for multiple threads to potentially register different event handlers against the same status code.
+* a need for the caller to define a desired callback sequence when registering event handlers. This is primarily driven by a desire to ensure that a particular event handler is called prior to a global default event handler that might take draconian action (e.g., abort the job)
+* a need for an event handler to indicate whether or not an "abort" is required at completion of the event processing chain. In many cases, the default event handler simply aborts the application. This is adequate in cases where a prior event handler can fully resolve the problem, and therefore safely terminate the event handler callback chain. However, in some cases an event handler may handle only enough of the problem to assure that an "abort" operation is not required, but needs to allow other event handlers an opportunity to further resolve issues. Since the subsequent handlers may have differing conclusions regarding termination, a method for reaching a consolidated result is required.
+* Event handlers can modify the results array in two ways:
+* the value of a particular key can be altered
+* a particular key-value pair can be marked for removal by freeing the key and setting it to NULL. This directs the implementation to remove that array element before invoking the next handler
+* Additions to the results array can be provided in the event handler's notification callback function. Any pmix_info_tstructures provided in that array will continue to be appended to the results array prior to invoking the next handler. Note that the status returned by each event handler will be appended to the results array just before the addition of any returned structures, as is currently done.
+* This RFC adds a second filter to the delivery procedure by allowing the registration to also specify the range of sources it will accept. Thus, even though an event generator may direct that this event go to a target process, the individual handlers registered by that process can specify which of them want to be invoked to service an event from that source range. Registrations that do not include a range directive will not be filtered.
+* PMIx Extensions
+   * Interfaces 
+      * TODO
+   * Macros
+      * PMIX_RANGE_PROC_LOCAL 7   // restrict range to the local proc
+         * given in a registration, the attribute indicates that the requestor only wishes this event handler to receive events generated by itself
+   * Attributes/Directives
+      * PMIX_EVENT_HDLR_NAME (existing)
+         * add a capability to support arbitrary ordering within single status, multi status and default event handlers.
+      * PMIX_EVENT_ORDER_PREPEND → PMIX_EVENT_HDLR_PREPEND (rename)
+      * PMIX_EVENT_HDLR_FIRST (new)
+         * invoke this event handler before any other handlers.
+         * Error condition if:
+            * any subsequent registrations contains this attribute
+            * requests to "register before" this event handler
+      * PMIX_EVENT_HDLR_LAST (new)
+         * invoke this event handler after all other handlers have been called. 
+         * Error condition if:
+            * More than one event handler is given this directive - any subsequent registrations that contain this attribute will return an error
+            * requests to "register after" this handler
+      * PMIX_EVENT_HDLR_FIRST_IN_CATEGORY (new)
+         * invoke this event handler before any other handlers in this category. 
+         * Only one event handler can be given this directive for each category 
+         * Error condition if:
+            * any subsequent registrations that contain this attribute 
+            * requests to "register before" this handler.
+      * PMIX_EVENT_HDLR_LAST_IN_CATEGORY -
+         * invoke this event handler after all other handlers in this category have been called. 
+         * Note that only one event handler can be given this directive.
+         * Error condition if:
+            *  any subsequent registrations in this category that contain this attribute 
+            * requests to "register after" this handler.
+      * PMIX_EVENT_HDLR_BEFORE 
+         * put this event handler immediately before the one specified in the (char*) value. 
+         * The named event handler must be in the same category (single, multi, or default) as the one being registered. 
+         * Error condition if:
+            *  the named event handler is not found, or the categories do not match.
+      * PMIX_EVENT_HDLR_AFTER 
+         * put this event handler immediately after the one specified in the (char*) value. 
+         * The named event handler must be in the same category (single, multi, or default) as the one being registered.
+         * Error condition if: 
+            * the named event handler is not found, or the categories do not match.
+      * PMIX_EVENT_HDLR_APPEND 
+         * append the handler being registered to the end of the chain for that category of handler. 
+         * If a handler has been specified to be the last in the category, then this handler will be placed directly in front of it.[a]
+      * PMIX_EVENT_NO_TERMINATION 
+         * indicates that the handler has satisfactorily handled the event and believes termination of the application is not required. Any other operations are permitted. This attribute can be overwritten by subsequent handlers.
+      * PMIX_EVENT_WANT_TERMINATION 
+         * indicates that the handler has determined that the application should be terminated. Note that this can be overridden by subsequent event handlers unless the PMIX_INFO_REQD directive is set in the pmix_info_t struct containing this attribute.
+   * Status Codes
+      * TODO
+   * Keys
+      * TODO
+* Use-Cases:
+   * Coordination Across Programming Models (OpenMP and MPI)
+      * PGAS & MPI, etc
+   * Coordinated fault recovery
+      * CIFTS
+      * MCEM
+RFC0020/RFC0028
+* Summary: PMIx data buffers
+   * Interfaces to ensure binary data can be correctly transferred between nodes in a heterogeneous environment (e.g., different network and host byte orders)
+   * RFC0028 extends the interfaces to handle the case where two clients are running different version of PMIx
+* PMIx Extensions
+   * Interfaces
+      * PMIx_Data_pack
+         * Pack the provided data into a buffer in preparation for transmission
+         * Includes optimizations as well (integer deltas for better compression)
+      * PMIx_Data_unpack
+      * PMIx_Data_copy
+         * This function, which can call other copy functions to build up complex data types, defines the method for making a copy of the specified data type
+      * PMIx_Data_print
+         * For debugging purposes
+      * PMIx_Data_copy_payload
+         * Copy the pmix_data_buffer_t payload from a src struct to a dest
+   * Macros
+      * PMIX_DATA_BUFFER_CREATE
+      * PMIX_DATA_BUFFER_RELEASE
+      * PMIX_DATA_BUFFER_CONSTRUCT
+      * PMIX_DATA_BUFFER_DESTRUCT
+* Use-Cases:
+   * Uniform serialization across heterogeneous systems
+      * Used in JSM 
+RFC0022
+* Summary: Environmental Parameter Directives for Applications and Launchers
+   * It is sometimes desirable or required that standard environmental variables (e.g., PATH, LD_LIBRARY_PATH, LD_PRELOAD) be modified prior to executing an application binary or a starter such as mpiexec - this is particularly true when tools/debuggers are used to start the application. This RFC proposes the definition of a new PMIx structure and associated attributes for specifying such operations
+* PMIx Extensions
+   * Interfaces
+      * PMIx_Spawn
+         * attributes added, not a new interface
+   * Attributes/Directives
+      * PMIX_SET_ENVAR
+         * "pmix.envar.set"
+         * (pmix_envar_t*) set the envar to the given value, overwriting any pre-existing one
+      * PMIX_ADD_ENVAR
+         * "pmix.envar.add" 
+         * (pmix_envar_t*) add envar, but do not overwrite any existing one
+      * PMIX_UNSET_ENVAR
+         * "Pmix.envar.unset"
+         * (char*) unset the envar, if present
+      * PMIX_PREPEND_ENVAR
+         * "Pmix.envar.prepnd"
+         * (pmix_envar_t*) prepend the given value to the specified envar using the separator character, creating the envar if it doesn't already exist
+      * PMIX_APPEND_ENVAR
+         * "pmix.envar.appnd"
+         * (pmix_envar_t*) append the given value to the specified envar using the separator character, creating the envar if it doesn't already exist
+* Use-Cases:
+   * Debuggers/tools
+   * General job/workflow launching
+RFC0024
+* Summary: Provide a mechanism by which applications can request a security credential from the system, and pass a credential back to the system for validation.
+   * Applications and tools often interact with each other in ways that require verification of the identity of the user making the request, and access to that user's relevant authorizations. This is particularly important when tools connect directly to a system-level PMIx server that may be operating at a privileged level. A variety of system management software packages provide this service, but the lack of standardized interfaces makes portability problematic. This RFC defines two new PMIx client-side APIs and two corresponding server interfaces to the host system management stack (SMS) for this purpose. 
+* PMIx Extensions
+   * Interfaces
+      * PMIx_Get_credential
+         * To request a credential from the PMIx server/SMS
+         * pmix_status_t PMIx_Get_credential (const pmix_info_t info[], size_t ninfo, pmix_credential_cbfunc_t cbfunc, void *cbdata);
+      * PMIx_Validate_credential
+         * To request validation of a credential by the PMIx server/SMS
+         * pmix_status_t PMIx_Validate_credential (const pmix_byte_object_t *cred, const pmix_info_t info[], size_t ninfo, pmix_validation_cbfunc_t cbfunc, void *cbdata);
+   * Macros
+      * pmix_credential_cbfunc_t
+         * To define a callback function to return a requested security credential
+         * typedef void (*pmix_credential_cbfunc_t)(pmix_status_t status, pmix_byte_object_t *credential, pmix_info_t info[], size_t ninfo, void *cbdata);
+         * NOTE: the credential is opaque and therefore understandable only by a service compatible with the issuer.
+      * pmix_validation_cbfunc_t
+         * To define a validation callback function to indicate if a provided credential is valid and communicate corresponding information:
+         * typedef void (*pmix_validation_cbfunc_t)(pmix_status_t status, pmix_info_t info[], size_t ninfo, void *cbdata);
+      * pmix_server_validate_cred_fn_t
+         * To request validation of a credential from the host SMS
+         * typedef pmix_status_t (*pmix_server_validate_cred_fn_t)(const pmix_proc_t *proc, pmix_byte_object_t *cred, const pmix_info_t directives[], size_t ndirs, pmix_validation_cbfunc_t cbfunc, void *cbdata);
+   * Attributes/Directives
+      * PMIX_CRED_TYPE (new)
+when passed in PMIx_Get_credential, a prioritized, comma-delimited list of desired credential types for use in environments where multiple authentication mechanisms may be available. When returned in a callback function, a string identifier of the credential type
+      * PMIX_USERID
+      * PMIX_GROUPID
+      * PMIX_TIMEOUT
+   * Status Codes
+      * PMIX_SUCCESS 
+   * Keys
+      * TODO
+* Use-Cases:
+   * Request and validate security credential for user-level applications and tools
+
+
+RFC0025
+* Summary: IO Forwarding
+   * Extends RFC 10 to support forwarding an application’s stdin and stdout/err to/from tools
+* PMIx Extensions
+   * Interfaces
+      * pmix_iof_cbfunc_t
+         * Define a callback function for delivering forwarded IO to a process. 
+         * This function will be called whenever data becomes available, or a specified buffering size and/or time has been met.
+      * PMIx_IOF_pull
+         * Register to receive output forwarded from a remote process.
+      * PMIx_IOF_deregister
+         * Deregister from output forwarded from a remote process.
+      * pmix_server_iof_fn_t
+         * Request the specified IO channels be forwarded from the given array of procs.
+         * The function shall return PMIX_SUCCESS once the host RM accepts the request for processing.
+         * The callback function shall be called when the request has been processed
+      * PMIx_server_IOF_deliver
+         * Provide a function by which the host RM can pass forwarded IO to the local PMIx server for distribution to its clients
+         * The PMIx server is responsible for determining which of its clients have actually registered for the provided data. 
+      * PMIx_IOF_push
+         * Push data collected locally (typically from stdin) to target recipients
+      * Pmix_server_stdin_fn_t
+         * Passes stdin to the host RM for transmission to specified recipients.
+         * The host RM is responsible for forwarding the data to all PMIx servers that host the specified target. 
+   * Macros
+      * PMIX_FWD_NO_CHANNELS        0x0000
+      * PMIX_FWD_STDIN_CHANNEL      0x0001
+      * PMIX_FWD_STDOUT_CHANNEL     0x0002
+      * PMIX_FWD_STDERR_CHANNEL     0x0004
+      * PMIX_FWD_STDDIAG_CHANNEL    0x0008
+      * PMIX_FWD_ALL_CHANNELS       0x00ff
+   * Attributes/Directives
+      * PMIX_IOF_CACHE_SIZE
+         * "Pmix.iof.csize"
+         * (uint32_t) requested size of the server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size
+      * PMIX_IOF_DROP_OLDEST
+         * "Pmix.iof.old"
+         * (bool) in an overflow situation, drop the oldest bytes to make room in the cache
+      * PMIX_IOF_DROP_NEWEST
+         * "Pmix.iof.new"
+         * (bool) in an overflow situation, drop any new bytes received until room becomes available in the cache (default)
+      * PMIX_IOF_BUFFERING_SIZE
+         * "Pmix.iof.bsize"
+         * (uint32_t) basically controls grouping of IO on the specified channel(s) to avoid being called every time a bit of IO arrives. The library will execute the callback whenever the specified number of bytes becomes available. Any remaining buffered data will be "flushed" upon call to deregister the respective channel
+      * PMIX_IOF_BUFFERING_TIME
+         * "Pmix.iof.btime"
+         * (uint32_t) max time in seconds to buffer IO before delivering it. Used in conjunction with buffering size, this prevents IO from being held indefinitely while waiting for another payload to arrive
+      * PMIX_IOF_COMPLETE
+         * "Pmix.iof.cmp"
+         * (bool) indicates whether or not the specified IO channel has been closed by the source
+      * PMIX_IOF_PUSH_STDIN
+         * "Pmix.iof.stdin"
+         * (pmixproc_t*) Used by a tool to request that the PMIx library collect the tool's stdin and forward it to the indicated proc - the PMIX_RANK_WILDCARD value indicates that all procs in the provided nspace are to receive the data
+* Use-Cases:
+   * Tools (not sure which ones exactly) and debuggers
+   * Fault detection
+RFC0027
+* Summary: Register files and directories for cleanup
+   * Extends Job Control and Monitoring API (RFC27)
+* PMIx Extensions
+   * Attributes/Directives
+      * PMIX_REGISTER_CLEANUP
+         * "Pmix.reg.cleanup"
+         * (char*) comma-delimited list of files to be removed upon process termination
+      * PMIX_REGISTER_CLEANUP_DIR
+         * "Pmix.reg.cleanupdir"
+         * (char*) comma-delimited list of directories to be removed upon process termination
+      * PMIX_CLEANUP_IGNORE
+         * "Pmix.cleanup.ignore"
+         * (char*) comma-delimited list of files or directories that are not to be removed
+      * PMIX_CLEANUP_RECURSIVE
+         * "Pmix.cleanup.recurse"
+         * (bool) recursively traverse subdirectories under the specified one(s)
+      * PMIX_CLEANUP_LEAVE_TOPDIR
+         * "Pmix.cleanup.lvtop"
+         * (bool) when recursively cleaning subdirs, do not remove the top-level directory (the one given in the cleanup request)
+* Use-Cases:
+   * Workflow Managers
+      * Pegasus
+      * Maestro
+      * Etc
+   * Applications that create temp files (e.g., for shared memory backing)
+      * OpenMPI & Flux
+         * If application dies unexpectedly/prematurely, the PMIx server can clean up after you
+   * Data staging (i.e., post-job stage out)?
+      * Cleanup these files once a job complete and stage-out the rest?
+
+
+RFC0029
+* Summary: Acquisition of Subsystem Launch Information
+   * Specifying the forwarding of environment variables before application launch
+   * Similar/related to:
+      * RFC0022 (Environmental Parameter Directives for Applications and Launchers)
+      * RFC0012 (Support for RM and network library interactions)
+* PMIx Extensions
+   * Interfaces
+      * Client-Side
+         * PMIx_Forward_envars
+            * Register environmental variables to be propagated with the launch.
+            * The PMIx server shall search the local environment for all envars matching the provided pattern, and include any such envars in the launch information "blob" returned by a subsequent call to PMIx_server_setup_application.
+      * Server-Side
+         * Pmix_setup_application_cbfunc_t
+            * define a callback function for the setup_application API
+         * PMIx_server_setup_application
+            * Provide a function by which the resource manager can request any application-specific information prior to launch of an application.
+            * For example, network libraries may opt to provide security credentials for the application. This is defined as a non-blocking operation in case libraries need to perform some action before responding. The returned data blob will be distributed along with the application and given to the local PMIx server on remote nodes for processing 
+         * PMIx_server_setup_local_support
+            * Provide a function by which the local PMIx server can perform any application-specific operations prior to spawning local clients of a given application.
+            * For example, a network library might need to setup the local driver for "instant on" addressing. 
+* Use-Cases:
+   * Starter programs: mpiexec
+   * Network libraries: provide security credentials before application launch
+   * TODO
+RFC0030
+* Summary: Fabric Manager Integration
+   * Provide greater access to fabric info and control to workload managers, resource managers, tools, applications
+   * Amends and extends RFC0012
+   * Adds
+      * attributes for querying network topology info and application traffic reports
+      * API for communicating QoS changes and topology info to the fabric manager
+      * Events for async notification of network issues
+* PMIx Extensions
+   * Interfaces
+      * PMIx_server_collect_inventory
+   * Attributes/Directives
+      * PMIX_MASTER_SERVER
+   * Link to implementation:
+      * https://github.com/pmix/pmix/pull/700
+* Use-Cases:
+   * Network Fabric Pre-Configuration
+      * Functionality was realized by Intel, tied to Fabric pre-configuration
+RFC0031
+* Summary: Network Resource Allocations
+   * Extends RFC0012
+   * Allows a caller to delineate that the requested resources target a specific library or consumer.
+* PMIx Extensions
+   * Interfaces
+      * TODO: what interface do these attrs apply to?
+   * Attributes/Directives
+      * PMIX_ALLOC_NETWORK
+         * TODO
+      * PMIX_ALLOC_NETWORK_ID
+         * TODO
+      * PMIX_ALLOC_NETWORK_TYPE
+         * TODO
+      * PMIX_ALLOC_NETWORK_PLANE
+         * TODO
+      * PMIX_ALLOC_NETWORK_ENDPTS
+         * TODO
+      * PMIX_ALLOC_NETWORK_SEC_KEY
+         * TODO
+* Use-Cases:
+   * Network Fabric Pre-configuration
+RFC0032
+* Summary: Extension of PMIx Logging Support
+   * Enable logging to syslog, smtp (email), job records
+   * Related to (extends) RFC 0010
+* PMIx Extensions
+   * Interfaces
+      * PMIx_Log
+   * Attributes/Directives
+      * Added
+         * PMIX_SERVER_GATEWAY
+         * PMIX_QUERY_LOG_CHANNELS
+         * PMIX_LOG_LOCAL_SYSLOG
+         * PMIX_LOG_GLOBAL_SYSLOG
+         * PMIX_LOG_JOB_RECORD
+         * PMIX_LOG_SYSLOG_PRI
+         * PMIX_LOG_GENERATE_TIMESTAMP
+         * PMIX_LOG_TAG_OUTPUT
+         * PMIX_LOG_ONCE
+         * PMIX_LOG_EMAIL_SENDER_ADDR
+         * PMIX_LOG_EMAIL_SERVER
+         * PMIX_LOG_EMAIL_SRVR_PORT
+      * Modified
+         * PMIX_LOG_SYSLOG
+         * PMIX_LOG_EMAIL
+         * PMIX_LOG_SYSLOG
+         * PMIX_LOG_LOCAL_SYSLOG
+         * PMIX_LOG_GLOBAL_SYSLOG
+         * PMIX_LOG_STDOUT
+         * PMIX_LOG_STDERR
+         * PMIX_LOG_EMAIL
+         * PMIX_LOG_EMAIL_MSG
+         * PMIX_LOG_EMAIL_ADDR
+         * PMIX_LOG_EMAIL_SUBJECT
+* Use-Cases:
+   * TODO
+
+
+PR33 (PR 139 in pmix-standard)
+* Summary: PMIx Groups
+   * Add mechanisms for the creation, monitoring, maintenance, and interact with of loosely coupled groups of PMIx processes
+   * Process Sets: user-provided label associated with a given set of application processes. Static entity set at launch time.
+   * Process Groups: collection of processes desiring a common, unique identifier for purposes such as passing events or participating in PMIx fence operations. Dynamic, runtime entity.
+* PMIx Extensions
+   * Interfaces
+      * PMIx_Group_construct
+      * PMIx_Group_construct_nb
+      * PMIx_Group_invite
+      * PMIx_Group_invite_nb
+      * PMIx_Group_join
+      * PMIx_Group_join_nb
+      * PMIx_Group_leave
+      * PMIx_Group_leave_nb
+      * PMIx_Group_destruct
+   * Attributes/Directives
+      * PMIx_Get
+         * PMIX_PSET_NAME
+      * PMIx_Query_info_nb
+         * PMIX_QUERY_NUM_PSETS
+            * the number of psets defined in the specified range (defaults to session)
+         * PMIX_QUERY_PSET_NAMES
+            * a comma-delimited list of the names of the psets defined in the specified range (defaults to session)
+      * PMIX_GROUP_ID
+      * PMIX_GROUP_LEADER
+         * This process is the leader of the group.  If defined, it will be the only process to receive certain events (rather than all processes in the group).
+      * PMIX_GROUP_OPTIONAL
+         * Participation is optional - do not return an error if any of the specified processes terminate without having joined.
+      * PMIX_GROUP_NOTIFY_TERMINATION
+         * Notify remaining members when another member terminates without first leaving the group
+      * PMIX_GROUP_ASSIGN_CONTEXT_ID
+         * OPENED ISSUE 194
+      * PMIX_TIMEOUT
+      * PMIX_GROUP_INVITE_ACCEPT
+      * PMIX_GROUP_INVITE_DECLINE
+      * PMIX_GROUP_FT_COLLECTIVE
+         * TODO: needs clarification, does this refer to the reference counting on join/leave?
+         * Adjust internal tracking for terminated processes. Default is false
+      * PMIX_GROUP_CONTEXT_ID
+      * PMIX_GROUP_LOCAL_ONLY
+         * Group operation only involves local processes
+   * Status Codes
+      * PMIX_GROUP_CONSTRUCT_ABORT
+         * Can be returned from the PMIX_GROUP_MEMBER_FAILED or the PMIX_GROUP_LEADER_FAILED event handlers
+         * Returned by construct calls if any event handlers return this status code
+      * PMIX_ERR_PARTIAL_SUCCESS
+         * Returned when group participation is optional and some processes fail to participate
+   * Events
+      * PMIX_GROUP_MEMBER_FAILED
+         * a process fails or terminates prior to calling PMIx_Group_construct
+      * PMIX_GROUP_LEADER_FAILED
+         * Failure of the declared leader at any time
+      * PMIX_GROUP_LEADER_SELECTED
+         * Communicates the results of the leader selection (after failure)
+      * PMIX_GROUP_INVITED
+         * a process has been invited to a group
+      * PMIX_GROUP_INVITE_ACCEPTED
+         * a process has accepted the invitation
+      * PMIX_GROUP_INVITE_DECLINED
+         * a process has declined the invitation
+      * PMIX_GROUP_INVITE_FAILED
+         * a process fails or terminates prior to responding to the invitation
+      * PMIX_GROUP_LEFT
+         * a process has left a group
+* Questions
+   * How do you leverage the groups within a fence (or other operations)?
+      * Use the group ID in the namespace field.  The PMIx server converts the group ranks into the absolute ranks that the host understands.
+   * Can you have nested groups?
+      * Logically you can but there isn’t a way to “link” the groups
+* Use-Cases:
+   * MPI Sessions
+PR 21
+* Summary: Tiered Storage System
+   * Provides a portable, vendor-independent interface for interacting with tiered storage systems
+* PMIx Extensions
+   * No specific low-level changes provided. Only high-level ideas
+   * Storage Tiers/Temperatures
+      * hot means the data is on the node. This could be in main memory or an attached NVRAM, or even a local disk should the node have one
+      * warm means network-local - cached on storage attached to the switch the node connects to.
+      * cool means the data is in the online storage or file system. It is not sitting in an offline archive.
+      * cold means it is in an offline archive that requires someone to load it into online storage prior to accessing
+   * Accessibility
+      * storage temperature
+      * for files in cold storage, an estimated time for retrieving them into cool storage
+      * for cool files, we might want the time to bring those files to the surface of the file system
+      * for warm and hot files, where those files are located
+   * Queries
+      * Amount of available storage
+      * Supported storage strategies
+      * Default storage strategy
+      * Unit of reservation
+      * Supported QoS levels
+      * Available bandwidth 
+      * Storage system topology - if the storage has burst buffers, in-cluster caching, or other layering under their control, the scheduler would like to know about it. 
+      * Support for co-located process placement (Hadoop wants to execute something local to the file inside the storage)
+   * Execute
+      * Delete the specified files
+      * Move the files to a specified location
+      * Bring the files to the specified storage temperature
+   * Other
+      * Estimate I/O transfer cost
+      * Allocate Resources (e.g., bandwidth, storage size, location, temperature)
+      * Specify policies
+      * Notification of events
+* Use-Cases:
+   * Schedulers
+      * Query storage system capabilities and attributes
+      * Set job limits/QOS/allocation
+      * Estimate I/O access/transfer cost
+      * Optimize job placement based on data location and/or storage system topology
+      * Initiate I/O transfer between tiers
+   * Workflow Managers/Applications
+      * Specify policies for files created by application (e.g., delete or stage-out)
+      * Detect problems with file accessibility
+      * Query remaining quota
+      * Initiate I/O transfer between tiers
+PR 23
+* Summary: 
+   * Direct-launch an application using a debugger tool: To support dbgr itself to use the PMIx spawn options to control the app’s startup, including directing the RM/app as to when to block and wait for debugger attachment, or stipulating that an interceptor library be preloaded. However, this means that the user is restricted to whatever cmd line options the debugger vendor has provided for operations such as process placement and binding, which places a significant burden on the debugger vendor. An example might look like the following:
+dbgr -n 3 ./myapp
+Assuming it is supported, co-launch of debugger daemons in this use-case is supported by adding a pmix_app_t to the PMIx_Spawn command, indicating that the resulting processes are debugger daemons by setting the PMIX_DEBUGGER_DAEMONS attribute. 
+   * Indirect-launch using a debugger tool: Executing a program under a debugger using an intermediate launcher such as mpiexec. In other words, the user executes the application/debugging session using something like the following command line:
+dbgr mpiexec -n 3 ./myapp
+
+
+This requires some degree of coordination between the dbgr tool and the launcher. Ultimately, it is the launcher that is going to launch the application, and the debugger must somehow inform it (and the application) that this is being done in a debug session so that the application knows to “block” until the debugger attaches to it. There are also potential modifications to the launch directive required by the debugger (e.g., to preload an interceptor library, or to use a debugger-provided local fork/exec agent).
+* PMIx Extensions
+   * Interfaces
+      * PMIx_server_init
+      * PMIx_Spawn
+      * PMIx_Alloc
+   * Macros
+      * PMIX_SPAWN_LAUNCHER
+      * PMIX_SPAWN_LOCAL_FORK_AGENT
+   * Attributes/Directives
+      * PMIX_DEBUGGER_DAEMONS
+      * PMIX_SET_ENVAR
+   * Status Codes
+      * PMIX_LAUNCHER_PAUSE_FOR_TOOL
+   * Keys
+      * TODO
+* Use-Cases:
+   * Support for Launching Applications Under Debugger Tools
+   * Example here
+
+
+PR 26
+* Summary: Power Control for Applications and Tools
+   * atomistic power control and measurement functions
+   * request allocation of a given power level for an application at time of job submission
+   * query current power level settings and current actual power usage
+   * set/modify the overall power level for a running application
+* PMIx Extensions
+   * Attributes/Directives
+      * PMIx_Query_info_nb (extended)
+         * PMIX_QUERY_POWER_CAP
+            * "pmix.query.pcap"
+            * (double) current power cap for the target resource
+         * PMIX_QUERY_POWER_SETTING
+            * "pmix.query.psetting"
+            * (double) current power setting for the target resource
+         * PMIX_QUERY_POWER_USAGE
+            * "pmix.query.puse"
+            * (double) current power level of the target resource
+         * PMIX_QUERY_FREQ_SETTING
+            * "pmix.query.freq"
+            * (double) current frequency setting (GHz) of the target resource
+         * PMIX_QUERY_CPU_FREQ
+            * "pmix.query.cfreq"
+            * (double) current operating frequency (GHz) of the target cpu
+         * PMIX_QUERY_CPU_GOVERNOR
+            * "pmix.query.cgov"
+            * (char*) current governor covering the target cpu
+         * PMIX_QUERY_AVAIL_GOVERNORS
+            * "pmix.query.govs"
+            * (char*) comma-delimited list of available governors on the specified nodes/cpus
+      * PMIx_Job_control_nb (extended)
+         * PMIX_POWER_HIGH
+            * "pmix.pwr.high"
+         * PMIX_POWER_LOW
+            * "pmix.pwr.low"
+         * PMIX_JOB_CONTROL_SET_POWER_CAP
+            * "pmix/jctrl.spcap"
+            * (double) set power cap for target resource
+         * PMIX_JOB_CONTROL_SET_POWER_LEVEL
+            * "pmix.jctrl.splvl"
+            * (char*) general power level for target resource
+         * PMIX_JOB_CONTROL_SET_POWER
+            * "pmix.jctrl.spwr"
+            * (double) set power of target resource to specified level
+         * PMIX_JOB_CONTROL_SET_FREQ
+            * "pmix.jctrl.sfreq"
+            * (double) set frequency (GHz) of target resource to specified value
+         * PMIX_JOB_CONTROL_SET_CPU_GOV
+            * "pmix.jctrl.cgov"
+            * (char*) set governor of target cpu to specified version
+* Use-Cases:
+   * System Monitoring
+      * Portable way for sysadmins & datacenters to collect power usage statistics
+      * Tie individual node/cpu/gpu/network power usage back to a job
+   * Power-aware scheduling
+      * Set limits on jobs per their power allocation
+      * (Research) Monitoring jobs for underutilization and rebalance power within and across jobs
+      * Charge users based on power usage
+[a]Already in the 3.1 Standard/Spec.
+Additionally the spec doc has PMIX_EVENT_HDLR_BEFORE, 
+PMIX_EVENT_HDLR_AFTER,
+PMIX_EVENT_HDLR_PREPEND,
+PMIX_EVENT_CUSTOM_RANGE,
+PMIX_EVENT_RETURN_OBJECT in the required attributes.
