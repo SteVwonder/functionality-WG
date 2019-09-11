@@ -224,182 +224,335 @@ grep -oEe '^[ ]*\*[ ]*(PMIx|pmix|Pmix|PMIX_DATA_BUFFER)_[a-zA-Z_]+' ./RFC_Use_Ca
 | pmix_status_t                   |
 | PMIx_Validate_credential        |
 | pmix_validation_cbfunc_t        |
+* PMI Lineage
+** PMI1
+#+begin_src shell :results output table replace
+awk 'BEGIN {p=-1} /----/{p=p*-1} p==1 {print $2}' ./pmi1.adoc \
+  | grep '^PMI_' | sed 's/(.*//' \
+  | sort | uniq
+#+end_src
+
+#+tblname: pmi1_funcs
+#+RESULTS:
+| PMI_Abort                    |
+| PMI_Args_to_keyval           |
+| PMI_Barrier                  |
+| PMI_Finalize                 |
+| PMI_Free_keyvals             |
+| PMI_Get_appnum               |
+| PMI_Get_clique_ranks         |
+| PMI_Get_clique_size          |
+| PMI_Get_id                   |
+| PMI_Get_id_length_max        |
+| PMI_Get_kvs_domain_id        |
+| PMI_Get_options              |
+| PMI_Get_rank                 |
+| PMI_Get_size                 |
+| PMI_Get_universe_size        |
+| PMI_Init                     |
+| PMI_Initialized              |
+| PMI_keyval_t                 |
+| PMI_keyval_t;                |
+| PMI_KVS_Commit               |
+| PMI_KVS_Create               |
+| PMI_KVS_Destroy              |
+| PMI_KVS_Get                  |
+| PMI_KVS_Get_key_length_max   |
+| PMI_KVS_Get_my_name          |
+| PMI_KVS_Get_name_length_max  |
+| PMI_KVS_Get_value_length_max |
+| PMI_KVS_Iter_first           |
+| PMI_KVS_Iter_next            |
+| PMI_KVS_Put                  |
+| PMI_Lookup_name              |
+| PMI_Parse_option             |
+| PMI_Publish_name             |
+| PMI_Spawn_multiple           |
+| PMI_Unpublish_name           |
+
+#+begin_src shell :var tbl=pmi1_funcs :results output table replace
+echo $tbl | sed -E 's/(PMI_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
+#+end_src
+
+#+tblname: possible_pmi1_pmix_matches
+#+RESULTS:
+| PMI_Abort                    | PMIx_Abort                |
+| PMI_Args_to_keyval           | PMIx_Args_to_keyval       |
+| PMI_Barrier                  | PMIx_Barrier              |
+| PMI_Finalize                 | PMIx_Finalize             |
+| PMI_Free_keyvals             | PMIx_Free_keyvals         |
+| PMI_Get_appnum               | PMIx_Get_appnum           |
+| PMI_Get_clique_ranks         | PMIx_Get_clique_ranks     |
+| PMI_Get_clique_size          | PMIx_Get_clique_size      |
+| PMI_Get_id                   | PMIx_Get_id               |
+| PMI_Get_id_length_max        | PMIx_Get_id_length_max    |
+| PMI_Get_kvs_domain_id        | PMIx_Get_kvs_domain_id    |
+| PMI_Get_options              | PMIx_Get_options          |
+| PMI_Get_rank                 | PMIx_Get_rank             |
+| PMI_Get_size                 | PMIx_Get_size             |
+| PMI_Get_universe_size        | PMIx_Get_universe_size    |
+| PMI_Init                     | PMIx_Init                 |
+| PMI_Initialized              | PMIx_Initialized          |
+| PMI_keyval_t                 | PMIx_keyval_t             |
+| PMI_keyval_t;                | PMIx_keyval_t;            |
+| PMI_KVS_Commit               | PMIx_Commit               |
+| PMI_KVS_Create               | PMIx_Create               |
+| PMI_KVS_Destroy              | PMIx_Destroy              |
+| PMI_KVS_Get                  | PMIx_Get                  |
+| PMI_KVS_Get_key_length_max   | PMIx_Get_key_length_max   |
+| PMI_KVS_Get_my_name          | PMIx_Get_my_name          |
+| PMI_KVS_Get_name_length_max  | PMIx_Get_name_length_max  |
+| PMI_KVS_Get_value_length_max | PMIx_Get_value_length_max |
+| PMI_KVS_Iter_first           | PMIx_Iter_first           |
+| PMI_KVS_Iter_next            | PMIx_Iter_next            |
+| PMI_KVS_Put                  | PMIx_Put                  |
+| PMI_Lookup_name              | PMIx_Lookup_name          |
+| PMI_Parse_option             | PMIx_Parse_option         |
+| PMI_Publish_name             | PMIx_Publish_name         |
+| PMI_Spawn_multiple           | PMIx_Spawn_multiple       |
+| PMI_Unpublish_name           | PMIx_Unpublish_name       |
+
+** Comparison
+#+tblname: pmi1_pmix
+#+RESULTS:
+| PMI_Abort                    | PMIx_Abort       |
+| PMI_Args_to_keyval           | None             |
+| PMI_Barrier                  | PMIx_Fence       |
+| PMI_Finalize                 | PMIx_Finalize    |
+| PMI_Free_keyvals             | None             |
+| PMI_Get_appnum               | ?                |
+| PMI_Get_clique_ranks         | PMIx_Get         |
+| PMI_Get_clique_size          | PMIx_Get         |
+| PMI_Get_id                   | None             |
+| PMI_Get_id_length_max        | None             |
+| PMI_Get_kvs_domain_id        | None             |
+| PMI_Get_options              | None             |
+| PMI_Get_rank                 | PMIx_Get         |
+| PMI_Get_size                 | PMIx_Get         |
+| PMI_Get_universe_size        | PMIx_Get         |
+| PMI_Init                     | PMIx_Init        |
+| PMI_Initialized              | PMIx_Initialized |
+| PMI_KVS_Commit               | PMIx_Commit      |
+| PMI_KVS_Create               | PMIx_Create      |
+| PMI_KVS_Destroy              | PMIx_Destroy     |
+| PMI_KVS_Get                  | PMIx_Get         |
+| PMI_KVS_Get_key_length_max   | None             |
+| PMI_KVS_Get_my_name          | None             |
+| PMI_KVS_Get_name_length_max  | None             |
+| PMI_KVS_Get_value_length_max | None             |
+| PMI_KVS_Iter_first           | None             |
+| PMI_KVS_Iter_next            | None             |
+| PMI_KVS_Put                  | PMIx_Put         |
+| PMI_Lookup_name              | PMIx_Lookup      |
+| PMI_Parse_option             | None             |
+| PMI_Publish_name             | PMIx_Publish     |
+| PMI_Spawn_multiple           | PMIx_Spawn       |
+| PMI_Unpublish_name           | PMIx_Unpublish   |
+
 * Comparison
-#+begin_src python :var val=1 :var standards_funcs=standards_funcs rfc_funcs=rfc_funcs :exports both :results output
-import itertools
+#+begin_src python :var val=1 :var standards_funcs=standards_funcs rfc_funcs=rfc_funcs pmi1_pmix=pmi1_pmix :exports both :results output
+  import re
+  import itertools
+  import pandas as pd
 
-standards_funcs = set([ x[0] for x in standards_funcs[1:]])
-rfc_funcs = set([ x[0] for x in rfc_funcs])
-covered_by_rfc = sorted(standards_funcs.intersection(rfc_funcs))
-not_covered_by_rfc = sorted(standards_funcs.difference(rfc_funcs))
-in_rfc_not_in_std = sorted(rfc_funcs.difference(standards_funcs))
-def prt(x):
-  for func in x:
-    print("\t", func)
+  standards_funcs = set([ x[0] for x in standards_funcs[1:]])
+  rfc_funcs = set([ x[0] for x in rfc_funcs])
+  data = []
+  data.extend([(x, "Covered by RFCs") for x in standards_funcs.intersection(rfc_funcs)])
+  data.extend([(x, "Not Covered by RFCs") for x in standards_funcs.difference(rfc_funcs)])
+  data.extend([(x, "Not in Standard") for x in rfc_funcs.difference(standards_funcs)])
+  df = pd.DataFrame.from_records(data, columns=('Function', 'Group'))
+  def categorize_functions(x):
+      if 'server' in x.lower() or (re.match('^PMIx_generate_.*', x) is not None):
+          return 'Server'
+      elif 'cbfunc' in x.lower() or (re.match('.*_fn_t$', x) is not None):
+          return 'Callback'
+      else:
+          return 'Client'
+  df['Type'] = df['Function'].map(categorize_functions)
 
-print("Percent Coverage: {:.1f}%".format(len(covered_by_rfc) * 100 / len(standards_funcs)))
+  pmi1_df = pd.DataFrame.from_records(pmi1_pmix)
+  pmi1_funcs = set(pmi1_df[1])
+  print(pmi1_funcs)
+  def get_lineage(x):
+      if x in pmi1_funcs:
+          return 'pmi1'
+      else:
+          return ''
 
-print("Functions covered by RFC notes:")
-prt(covered_by_rfc)
-print("Functions not covered by RFC notes:")
-prt(not_covered_by_rfc)
-print("Functions in RFC notes but not in Standard:")
-prt(in_rfc_not_in_std)
+  df['PMI Lineage'] = df['Function'].map(get_lineage)
 
-#return list(itertools.zip_longest(not_covered_by_rfc, covered_by_rfc, in_rfc_not_in_std, fillvalue=""))
+  df.sort_values(['Group', 'Type', 'Function'], inplace=True)
+  def percent_covered(df):
+      return 100 * df[df.Group == 'Covered by RFCs'].size / float(df[df.Group != 'Not in Standard'].size)
+  print "Percentage of interfaces covered by notes: {:.1f}%".format(percent_covered(df))
+  print "Percentage of Client interfaces covered by notes: {:.1f}%".format(percent_covered(df[df.Type == 'Client']))
+  print "Percentage of Server interfaces covered by notes: {:.1f}%".format(percent_covered(df[df.Type == 'Server']))
+  print "Percentage of Callback interfaces covered by notes: {:.1f}%".format(percent_covered(df[df.Type == 'Callback']))
+
+  with pd.option_context(
+          'display.max_rows', None,
+          'display.max_columns', None
+  ):
+      #print(df.to_latex())
+      #print(df[df.Type == 'Client'].sort_values(['Function']))
+      print(df.to_string(index=False))
+  #return df
 #+end_src
 
 #+RESULTS:
 #+begin_example
-Percent Coverage: 32.1%
-Functions covered by RFC notes:
-	 PMIX_DATA_BUFFER_CONSTRUCT
-	 PMIX_DATA_BUFFER_CREATE
-	 PMIX_DATA_BUFFER_DESTRUCT
-	 PMIX_DATA_BUFFER_RELEASE
-	 PMIx_Data_copy
-	 PMIx_Data_copy_payload
-	 PMIx_Data_pack
-	 PMIx_Data_print
-	 PMIx_Data_unpack
-	 PMIx_Deregister_event_handler
-	 PMIx_Get
-	 PMIx_Get_credential
-	 PMIx_Group_construct
-	 PMIx_Group_construct_nb
-	 PMIx_Group_destruct
-	 PMIx_Group_invite
-	 PMIx_Group_invite_nb
-	 PMIx_Group_join
-	 PMIx_Group_join_nb
-	 PMIx_Group_leave
-	 PMIx_Group_leave_nb
-	 PMIx_IOF_deregister
-	 PMIx_IOF_pull
-	 PMIx_IOF_push
-	 PMIx_Init
-	 PMIx_Job_control_nb
-	 PMIx_Log
-	 PMIx_Notify_event
-	 PMIx_Process_monitor_nb
-	 PMIx_Put
-	 PMIx_Query_info_nb
-	 PMIx_Register_event_handler
-	 PMIx_Spawn
-	 PMIx_Validate_credential
-	 PMIx_server_IOF_deliver
-	 PMIx_server_collect_inventory
-	 PMIx_server_init
-	 PMIx_server_setup_application
-	 PMIx_server_setup_local_support
-	 pmix_credential_cbfunc_t
-	 pmix_iof_cbfunc_t
-	 pmix_server_iof_fn_t
-	 pmix_server_job_control_fn_t
-	 pmix_server_validate_cred_fn_t
-	 pmix_validation_cbfunc_t
-Functions not covered by RFC notes:
-	 PMIX_DATA_BUFFER_LOAD
-	 PMIX_DATA_BUFFER_UNLOAD
-	 PMIx_Abort
-	 PMIx_Alloc_directive_string
-	 PMIx_Allocation_request
-	 PMIx_Allocation_request_nb
-	 PMIx_Commit
-	 PMIx_Connect
-	 PMIx_Connect_nb
-	 PMIx_Data_range_string
-	 PMIx_Data_type_string
-	 PMIx_Disconnect
-	 PMIx_Disconnect_nb
-	 PMIx_Error_string
-	 PMIx_Fence
-	 PMIx_Fence_nb
-	 PMIx_Finalize
-	 PMIx_Get_nb
-	 PMIx_Get_version
-	 PMIx_Group_destruct_nb
-	 PMIx_IOF_channel_string
-	 PMIx_Info_directives_string
-	 PMIx_Initialized
-	 PMIx_Job_control
-	 PMIx_Log_nb
-	 PMIx_Lookup
-	 PMIx_Lookup_nb
-	 PMIx_Persistence_string
-	 PMIx_Proc_state_string
-	 PMIx_Process_monitor
-	 PMIx_Publish
-	 PMIx_Publish_nb
-	 PMIx_Register_attributes
-	 PMIx_Resolve_nodes
-	 PMIx_Resolve_peers
-	 PMIx_Scope_string
-	 PMIx_Spawn_nb
-	 PMIx_Store_internal
-	 PMIx_Unpublish
-	 PMIx_Unpublish_nb
-	 PMIx_generate_ppn
-	 PMIx_generate_regex
-	 PMIx_server_deliver_inventory
-	 PMIx_server_deregister_client
-	 PMIx_server_deregister_fabric
-	 PMIx_server_deregister_nspace
-	 PMIx_server_dmodex_request
-	 PMIx_server_finalize
-	 PMIx_server_get_index
-	 PMIx_server_get_vertex_info
-	 PMIx_server_register_client
-	 PMIx_server_register_fabric
-	 PMIx_server_register_nspace
-	 PMIx_server_setup_fork
-	 PMIx_tool_connect_to_server
-	 PMIx_tool_finalize
-	 PMIx_tool_init
-	 pmix_connection_cbfunc_t
-	 pmix_dmodex_response_fn_t
-	 pmix_event_notification_cbfunc_fn_t
-	 pmix_evhdlr_reg_cbfunc_t
-	 pmix_hdlr_reg_cbfunc_t
-	 pmix_info_cbfunc_t
-	 pmix_lookup_cbfunc_t
-	 pmix_modex_cbfunc_t
-	 pmix_notification_fn_t
-	 pmix_op_cbfunc_t
-	 pmix_release_cbfunc_t
-	 pmix_server_abort_fn_t
-	 pmix_server_alloc_fn_t
-	 pmix_server_client_connected_fn_t
-	 pmix_server_client_finalized_fn_t
-	 pmix_server_connect_fn_t
-	 pmix_server_deregister_events_fn_t
-	 pmix_server_disconnect_fn_t
-	 pmix_server_dmodex_req_fn_t
-	 pmix_server_fencenb_fn_t
-	 pmix_server_get_cred_fn_t
-	 pmix_server_listener_fn_t
-	 pmix_server_log_fn_t
-	 pmix_server_lookup_fn_t
-	 pmix_server_module_t
-	 pmix_server_monitor_fn_t
-	 pmix_server_notify_event_fn_t
-	 pmix_server_publish_fn_t
-	 pmix_server_query_fn_t
-	 pmix_server_register_events_fn_t
-	 pmix_server_spawn_fn_t
-	 pmix_server_stdin_fn_t
-	 pmix_server_tool_connection_fn_t
-	 pmix_server_unpublish_fn_t
-	 pmix_setup_application_cbfunc_t
-	 pmix_spawn_cbfunc_t
-	 pmix_tool_connection_cbfunc_t
-	 pmix_value_cbfunc_t
-Functions in RFC notes but not in Standard:
-	 PMIx_Alloc
-	 PMIx_Forward_envars
-	 PMIx_Heartbeat
-	 Pmix_server_monitor_fn_t
-	 Pmix_server_stdin_fn_t
-	 Pmix_setup_application_cbfunc_t
-	 pmix_status_t
+set(['PMIx_Spawn', 'None', 'PMIx_Init', 'PMIx_Initialized', 'PMIx_Unpublish', 'PMIx_Create', 'PMIx_Finalize', 'PMIx_Destroy', 'PMIx_Put', 'PMIx_Publish', 'PMIx_Fence', 'PMIx_Abort', 'PMIx_Lookup', 'PMIx_Commit', '?', 'PMIx_Get'])
+Percentage of interfaces covered by notes: 32.1%
+Percentage of Client interfaces covered by notes: 44.7%
+Percentage of Server interfaces covered by notes: 17.4%
+Percentage of Callback interfaces covered by notes: 16.7%
+                            Function                Group      Type PMI Lineage
+            pmix_credential_cbfunc_t      Covered by RFCs  Callback            
+                   pmix_iof_cbfunc_t      Covered by RFCs  Callback            
+            pmix_validation_cbfunc_t      Covered by RFCs  Callback            
+          PMIX_DATA_BUFFER_CONSTRUCT      Covered by RFCs    Client            
+             PMIX_DATA_BUFFER_CREATE      Covered by RFCs    Client            
+           PMIX_DATA_BUFFER_DESTRUCT      Covered by RFCs    Client            
+            PMIX_DATA_BUFFER_RELEASE      Covered by RFCs    Client            
+                      PMIx_Data_copy      Covered by RFCs    Client            
+              PMIx_Data_copy_payload      Covered by RFCs    Client            
+                      PMIx_Data_pack      Covered by RFCs    Client            
+                     PMIx_Data_print      Covered by RFCs    Client            
+                    PMIx_Data_unpack      Covered by RFCs    Client            
+       PMIx_Deregister_event_handler      Covered by RFCs    Client            
+                            PMIx_Get      Covered by RFCs    Client        pmi1
+                 PMIx_Get_credential      Covered by RFCs    Client            
+                PMIx_Group_construct      Covered by RFCs    Client            
+             PMIx_Group_construct_nb      Covered by RFCs    Client            
+                 PMIx_Group_destruct      Covered by RFCs    Client            
+                   PMIx_Group_invite      Covered by RFCs    Client            
+                PMIx_Group_invite_nb      Covered by RFCs    Client            
+                     PMIx_Group_join      Covered by RFCs    Client            
+                  PMIx_Group_join_nb      Covered by RFCs    Client            
+                    PMIx_Group_leave      Covered by RFCs    Client            
+                 PMIx_Group_leave_nb      Covered by RFCs    Client            
+                 PMIx_IOF_deregister      Covered by RFCs    Client            
+                       PMIx_IOF_pull      Covered by RFCs    Client            
+                       PMIx_IOF_push      Covered by RFCs    Client            
+                           PMIx_Init      Covered by RFCs    Client        pmi1
+                 PMIx_Job_control_nb      Covered by RFCs    Client            
+                            PMIx_Log      Covered by RFCs    Client            
+                   PMIx_Notify_event      Covered by RFCs    Client            
+             PMIx_Process_monitor_nb      Covered by RFCs    Client            
+                            PMIx_Put      Covered by RFCs    Client        pmi1
+                  PMIx_Query_info_nb      Covered by RFCs    Client            
+         PMIx_Register_event_handler      Covered by RFCs    Client            
+                          PMIx_Spawn      Covered by RFCs    Client        pmi1
+            PMIx_Validate_credential      Covered by RFCs    Client            
+             PMIx_server_IOF_deliver      Covered by RFCs    Server            
+       PMIx_server_collect_inventory      Covered by RFCs    Server            
+                    PMIx_server_init      Covered by RFCs    Server            
+       PMIx_server_setup_application      Covered by RFCs    Server            
+     PMIx_server_setup_local_support      Covered by RFCs    Server            
+                pmix_server_iof_fn_t      Covered by RFCs    Server            
+        pmix_server_job_control_fn_t      Covered by RFCs    Server            
+      pmix_server_validate_cred_fn_t      Covered by RFCs    Server            
+            pmix_connection_cbfunc_t  Not Covered by RFCs  Callback            
+           pmix_dmodex_response_fn_t  Not Covered by RFCs  Callback            
+ pmix_event_notification_cbfunc_fn_t  Not Covered by RFCs  Callback            
+            pmix_evhdlr_reg_cbfunc_t  Not Covered by RFCs  Callback            
+              pmix_hdlr_reg_cbfunc_t  Not Covered by RFCs  Callback            
+                  pmix_info_cbfunc_t  Not Covered by RFCs  Callback            
+                pmix_lookup_cbfunc_t  Not Covered by RFCs  Callback            
+                 pmix_modex_cbfunc_t  Not Covered by RFCs  Callback            
+              pmix_notification_fn_t  Not Covered by RFCs  Callback            
+                    pmix_op_cbfunc_t  Not Covered by RFCs  Callback            
+               pmix_release_cbfunc_t  Not Covered by RFCs  Callback            
+     pmix_setup_application_cbfunc_t  Not Covered by RFCs  Callback            
+                 pmix_spawn_cbfunc_t  Not Covered by RFCs  Callback            
+       pmix_tool_connection_cbfunc_t  Not Covered by RFCs  Callback            
+                 pmix_value_cbfunc_t  Not Covered by RFCs  Callback            
+               PMIX_DATA_BUFFER_LOAD  Not Covered by RFCs    Client            
+             PMIX_DATA_BUFFER_UNLOAD  Not Covered by RFCs    Client            
+                          PMIx_Abort  Not Covered by RFCs    Client        pmi1
+         PMIx_Alloc_directive_string  Not Covered by RFCs    Client            
+             PMIx_Allocation_request  Not Covered by RFCs    Client            
+          PMIx_Allocation_request_nb  Not Covered by RFCs    Client            
+                         PMIx_Commit  Not Covered by RFCs    Client        pmi1
+                        PMIx_Connect  Not Covered by RFCs    Client            
+                     PMIx_Connect_nb  Not Covered by RFCs    Client            
+              PMIx_Data_range_string  Not Covered by RFCs    Client            
+               PMIx_Data_type_string  Not Covered by RFCs    Client            
+                     PMIx_Disconnect  Not Covered by RFCs    Client            
+                  PMIx_Disconnect_nb  Not Covered by RFCs    Client            
+                   PMIx_Error_string  Not Covered by RFCs    Client            
+                          PMIx_Fence  Not Covered by RFCs    Client        pmi1
+                       PMIx_Fence_nb  Not Covered by RFCs    Client            
+                       PMIx_Finalize  Not Covered by RFCs    Client        pmi1
+                         PMIx_Get_nb  Not Covered by RFCs    Client            
+                    PMIx_Get_version  Not Covered by RFCs    Client            
+              PMIx_Group_destruct_nb  Not Covered by RFCs    Client            
+             PMIx_IOF_channel_string  Not Covered by RFCs    Client            
+         PMIx_Info_directives_string  Not Covered by RFCs    Client            
+                    PMIx_Initialized  Not Covered by RFCs    Client        pmi1
+                    PMIx_Job_control  Not Covered by RFCs    Client            
+                         PMIx_Log_nb  Not Covered by RFCs    Client            
+                         PMIx_Lookup  Not Covered by RFCs    Client        pmi1
+                      PMIx_Lookup_nb  Not Covered by RFCs    Client            
+             PMIx_Persistence_string  Not Covered by RFCs    Client            
+              PMIx_Proc_state_string  Not Covered by RFCs    Client            
+                PMIx_Process_monitor  Not Covered by RFCs    Client            
+                        PMIx_Publish  Not Covered by RFCs    Client        pmi1
+                     PMIx_Publish_nb  Not Covered by RFCs    Client            
+            PMIx_Register_attributes  Not Covered by RFCs    Client            
+                  PMIx_Resolve_nodes  Not Covered by RFCs    Client            
+                  PMIx_Resolve_peers  Not Covered by RFCs    Client            
+                   PMIx_Scope_string  Not Covered by RFCs    Client            
+                       PMIx_Spawn_nb  Not Covered by RFCs    Client            
+                 PMIx_Store_internal  Not Covered by RFCs    Client            
+                      PMIx_Unpublish  Not Covered by RFCs    Client        pmi1
+                   PMIx_Unpublish_nb  Not Covered by RFCs    Client            
+                  PMIx_tool_finalize  Not Covered by RFCs    Client            
+                      PMIx_tool_init  Not Covered by RFCs    Client            
+                   PMIx_generate_ppn  Not Covered by RFCs    Server            
+                 PMIx_generate_regex  Not Covered by RFCs    Server            
+       PMIx_server_deliver_inventory  Not Covered by RFCs    Server            
+       PMIx_server_deregister_client  Not Covered by RFCs    Server            
+       PMIx_server_deregister_fabric  Not Covered by RFCs    Server            
+       PMIx_server_deregister_nspace  Not Covered by RFCs    Server            
+          PMIx_server_dmodex_request  Not Covered by RFCs    Server            
+                PMIx_server_finalize  Not Covered by RFCs    Server            
+               PMIx_server_get_index  Not Covered by RFCs    Server            
+         PMIx_server_get_vertex_info  Not Covered by RFCs    Server            
+         PMIx_server_register_client  Not Covered by RFCs    Server            
+         PMIx_server_register_fabric  Not Covered by RFCs    Server            
+         PMIx_server_register_nspace  Not Covered by RFCs    Server            
+              PMIx_server_setup_fork  Not Covered by RFCs    Server            
+         PMIx_tool_connect_to_server  Not Covered by RFCs    Server            
+              pmix_server_abort_fn_t  Not Covered by RFCs    Server            
+              pmix_server_alloc_fn_t  Not Covered by RFCs    Server            
+   pmix_server_client_connected_fn_t  Not Covered by RFCs    Server            
+   pmix_server_client_finalized_fn_t  Not Covered by RFCs    Server            
+            pmix_server_connect_fn_t  Not Covered by RFCs    Server            
+  pmix_server_deregister_events_fn_t  Not Covered by RFCs    Server            
+         pmix_server_disconnect_fn_t  Not Covered by RFCs    Server            
+         pmix_server_dmodex_req_fn_t  Not Covered by RFCs    Server            
+            pmix_server_fencenb_fn_t  Not Covered by RFCs    Server            
+           pmix_server_get_cred_fn_t  Not Covered by RFCs    Server            
+           pmix_server_listener_fn_t  Not Covered by RFCs    Server            
+                pmix_server_log_fn_t  Not Covered by RFCs    Server            
+             pmix_server_lookup_fn_t  Not Covered by RFCs    Server            
+                pmix_server_module_t  Not Covered by RFCs    Server            
+            pmix_server_monitor_fn_t  Not Covered by RFCs    Server            
+       pmix_server_notify_event_fn_t  Not Covered by RFCs    Server            
+            pmix_server_publish_fn_t  Not Covered by RFCs    Server            
+              pmix_server_query_fn_t  Not Covered by RFCs    Server            
+    pmix_server_register_events_fn_t  Not Covered by RFCs    Server            
+              pmix_server_spawn_fn_t  Not Covered by RFCs    Server            
+              pmix_server_stdin_fn_t  Not Covered by RFCs    Server            
+    pmix_server_tool_connection_fn_t  Not Covered by RFCs    Server            
+          pmix_server_unpublish_fn_t  Not Covered by RFCs    Server            
+     Pmix_setup_application_cbfunc_t      Not in Standard  Callback            
+                          PMIx_Alloc      Not in Standard    Client            
+                 PMIx_Forward_envars      Not in Standard    Client            
+                      PMIx_Heartbeat      Not in Standard    Client            
+                       pmix_status_t      Not in Standard    Client            
+            Pmix_server_monitor_fn_t      Not in Standard    Server            
+              Pmix_server_stdin_fn_t      Not in Standard    Server            
 #+end_example
