@@ -1,3 +1,6 @@
+# Disable underscore ”_” as subscript indication
+#+OPTIONS: ^:nil
+
 * Functions/APIs in the Standard
 #+begin_src shell :dir ~/Repositories/pmix/pmix-standard/ :results output table replace :colnames yes
 echo "Function_Name Source_File"
