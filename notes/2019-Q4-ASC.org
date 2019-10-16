@@ -50,8 +50,10 @@
 * Work Completed So Far
  - Went through each RFC, documenting the interfaces and use-cases covered
  - Aggregated the RFC notes into rough slices
- - Drafts of Debugging & Bootstrap Use-Cases
  - Analysis of what interfaces were not covered by RFCs
+ - Drafts of Debugging & Bootstrap Use-Cases
+   - Currently "issues" in the pmix/pmix-standard GitHub repo
+[[./figures/Debugging.png]]
 * Call for Participation
 ** Works In Progress
  - General structure and template for Use-Cases
