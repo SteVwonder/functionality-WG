@@ -1,0 +1,46 @@
+#+TITLE: Functionality Slices Working Group
+#+DATE: November 20, 2019
+#+AUTHOR:
+# Disable underscore ”_” as subscript indication
+#+OPTIONS: ^:nil
+# Disable Outline/Table-of-Contents
+#+OPTIONS: toc:nil
+# Make the fonts look not terrible: https://tex.stackexchange.com/questions/55096/anti-aliasing-from-latex-to-pdf
+#+LATEX_HEADER: \usepackage{lmodern}
+# Macro for coloring text (also links)
+#+MACRO: color @@latex:{\color{$1}@@$2@@latex:}@@
+
+* Executive Summary
+ - *Problem:* Given the size and structure of the PMIx standard document, it can be difficult to find the PMIx components necessary for a given use-case
+ - *Goal:* Provide a mechanism for focusing in on the aspects of the standard that are of interest to a particular user/use-case
+ - *Proposed solution:* compile a list of high-level use-cases and the PMIx capabilities required to support them
+   - Answer the question: "To do ____ with PMIx, what interfaces should I use and my resource manager support?"
+* Goals
+** Short-term:
+ - Use-Case Milestone 1 (Jan 2020):
+   - bootstrap (business card exchange)
+   - debuggers / tools
+ - Use-Case Milestone 2 (Q1/Q2 2020):
+   - hybrid programming models
+   - instant-on
+   - workflow/application management
+** Long-term:
+ - Add interfaces for querying "use-case support"
+ - Identify and document emerging use-cases
+   - cross-version compatibility
+   - fault tolerance
+   - groups/flexible allocations
+   - power control
+   - tiered storage
+* Call for Participation
+** Help Wanted
+ - Identifying use-cases that we’ve missed
+ - Reviewing documented use-cases
+ - Documenting identified use-cases
+** How to Join
+ - Subscribe to our Google Group mailing list
+   - [[https://groups.google.com/forum/#!forum/pmix-forum-wg-func-slices][*{{{color(blue,\underline{pmix-forum-wg-func-slices})}}}*]]
+ - Weekly call
+   - Wednesdays @ 9am PT / 12pm ET
+   - Webex info sent via mailing list
+   - Email me for a calendar invite (herbein1@llnl.gov)
