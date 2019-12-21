@@ -52,8 +52,16 @@ Might be good to start with a paragraph that summarizes the use-case and
 provides terminology (define tools vs debuggers, different forms of launching,
 what is attaching, what is process acquisition).
 
+- Terminology
+  - Tools vs debuggers
+  - Different forms of launching
+  - Attaching
+  - Process Acquisition
+
 Add cospawn
 
 We should reference this file: https://github.com/openpmix/openpmix/blob/6a8cc1ca0523b531b20a9a0f7bf7b27c9b5c6023/examples/debugger.c
 
 What does the server-side need to support?
+
+Add required/optional attributes for the affected interfaces
