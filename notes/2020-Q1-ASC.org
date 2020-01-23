@@ -1,0 +1,53 @@
+#+TITLE: Functionality Slices Working Group
+#+DATE: January 23, 2020
+#+AUTHOR:
+# Disable underscore ”_” as subscript indication
+#+OPTIONS: ^:nil
+# Disable Outline/Table-of-Contents
+#+OPTIONS: toc:nil
+# Make the fonts look not terrible: https://tex.stackexchange.com/questions/55096/anti-aliasing-from-latex-to-pdf
+#+LATEX_HEADER: \usepackage{lmodern}
+
+* WG Summary?
+ - *Problem:* Given the size and structure of the PMIx standard document, it can be difficult to find the PMIx components necessary for a given use-case
+ - *Goal:* Provide a mechanism for focusing in on the aspects of the standard that are of interest to a particular user/use-case
+ - *Proposed solution:* compile a list of high-level use-cases and the PMIx capabilities required to support them
+* Goals
+** Short-term:
+ - Use-Case Milestone 1 (Jan 2020):
+   - bootstrap (business card exchange)
+   - debuggers / tools
+ - Use-Case Milestone 2 (End of Q1 2020):
+   - hybrid programming models
+   - instant-on
+   - workflow management
+   - application management
+* Goals
+** Long-term:
+ - Identify and document emerging use-cases, working with other WGs where applicable:
+   - tiered storage
+   - power control
+   - groups/flexible allocations
+   - fault tolerance
+   - cross-version compatibility
+ - Begin integrating use-cases into the standard document
+ - Add interfaces into the standard for querying "use-case support"
+* Work Completed So Far
+ - Reviewed each RFC, documenting the interfaces and use-cases covered
+   - Aggregated the RFC notes into rough slices
+ - First Round of Use-Cases
+   - bootstrap (business card exchange)
+   - debuggers / tools
+   - hybrid programming models
+* Call for Participation
+** Help Wanted
+ - Identifying use-cases that we’ve missed
+ - Reviewing documented use-cases
+ - Documenting identified use-cases
+** How to Join
+ - Subscribe to our Google Group mailing list
+   - pmix-forum-wg-func-slices
+ - Weekly call
+   - Wednesdays @ 9am PT / 12pm ET
+   - Webex info sent via mailing list
+   - Email me for a calendar invite
