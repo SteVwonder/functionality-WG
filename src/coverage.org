@@ -481,8 +481,7 @@ echo $tbl | sed -E 's/(PMI2_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
 | PMI2_Nameserv_publish         | PMIx_Publish       |
 | PMI2_Nameserv_unpublish       | PMIx_Unpublish     |
 
-
-* Comparison
+* Coverage Analysis
 #+begin_src python :var val=1 :var standards_funcs=standards_funcs rfc_funcs=rfc_funcs usecase_funcs=usecase_funcs pmi1_pmix=pmi1_pmix pmi2_pmix=pmi2_pmix :exports both :results output
   import re
   import itertools
@@ -557,13 +556,13 @@ echo $tbl | sed -E 's/(PMI2_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
 
 #+RESULTS:
 #+begin_example
-{'PMIx_Abort', 'PMIx_Init', 'PMIx_Put', 'PMIx_Fence', 'PMIx_Spawn', 'PMIx_Get', 'PMIx_Unpublish', 'PMIx_Publish', 'PMIx_Initialized', 'None', 'PMIx_Finalize', 'PMIx_Lookup', 'PMIx_Commit'}
-{'PMIx_Abort', 'PMIx_Init', 'PMIx_Init ', 'PMIx_Put', 'PMIx_Fence', 'PMIx_Spawn', 'PMIx_Get', 'PMIx_Unpublish', 'PMIx_Connect', 'PMIx_Publish', 'PMIx_Initialized', 'None', 'PMIx_Finalize', 'PMIx_Lookup', 'PMIx_Disconnect'}
-Percentage of interfaces covered by use cases: 12.1%
+{'PMIx_Initialized', 'PMIx_Spawn', 'PMIx_Publish', 'PMIx_Put', 'PMIx_Get', 'PMIx_Finalize', 'None', 'PMIx_Commit', 'PMIx_Abort', 'PMIx_Fence', 'PMIx_Unpublish', 'PMIx_Init', 'PMIx_Lookup'}
+{'PMIx_Initialized', 'PMIx_Spawn', 'PMIx_Init ', 'PMIx_Publish', 'PMIx_Put', 'PMIx_Get', 'PMIx_Finalize', 'None', 'PMIx_Abort', 'PMIx_Fence', 'PMIx_Disconnect', 'PMIx_Unpublish', 'PMIx_Init', 'PMIx_Connect', 'PMIx_Lookup'}
+Percentage of interfaces covered by use cases: 14.1%
 Percentage of Client interfaces covered by use cases: 28.0%
-Percentage of Server interfaces covered by use cases: 6.8%
+Percentage of Server interfaces covered by use cases: 11.4%
 Percentage of Callback interfaces covered by use cases: 5.6%
-Percentage of Non-blocking interfaces covered by use cases: 0.0%
+Percentage of Non-blocking interfaces covered by use cases: 4.0%
                             Function                     Group           Type PMI Lineage
  pmix_event_notification_cbfunc_fn_t      Covered by Use Cases       Callback            
        PMIx_Deregister_event_handler      Covered by Use Cases         Client            
@@ -580,8 +579,11 @@ Percentage of Non-blocking interfaces covered by use cases: 0.0%
                             PMIx_Put      Covered by Use Cases         Client     pmi 1&2
                           PMIx_Spawn      Covered by Use Cases         Client     pmi 1&2
                          PMIx_Commit      Covered by Use Cases         Client        pmi1
+                  PMIx_Query_info_nb      Covered by Use Cases   Non-blocking            
              PMIx_server_IOF_deliver      Covered by Use Cases         Server            
           PMIx_server_dmodex_request      Covered by Use Cases         Server            
+                    PMIx_server_init      Covered by Use Cases         Server            
+         PMIx_tool_connect_to_server      Covered by Use Cases         Server            
          pmix_server_dmodex_req_fn_t      Covered by Use Cases         Server            
             pmix_connection_cbfunc_t  Not Covered by Use Cases       Callback            
             pmix_credential_cbfunc_t  Not Covered by Use Cases       Callback            
@@ -657,7 +659,6 @@ Percentage of Non-blocking interfaces covered by use cases: 0.0%
                       PMIx_Lookup_nb  Not Covered by Use Cases   Non-blocking            
              PMIx_Process_monitor_nb  Not Covered by Use Cases   Non-blocking            
                      PMIx_Publish_nb  Not Covered by Use Cases   Non-blocking            
-                  PMIx_Query_info_nb  Not Covered by Use Cases   Non-blocking            
                        PMIx_Spawn_nb  Not Covered by Use Cases   Non-blocking            
                    PMIx_Unpublish_nb  Not Covered by Use Cases   Non-blocking            
          PMIx_Validate_credential_nb  Not Covered by Use Cases   Non-blocking            
@@ -680,13 +681,11 @@ Percentage of Non-blocking interfaces covered by use cases: 0.0%
        PMIx_server_deregister_client  Not Covered by Use Cases         Server            
        PMIx_server_deregister_nspace  Not Covered by Use Cases         Server            
                 PMIx_server_finalize  Not Covered by Use Cases         Server            
-                    PMIx_server_init  Not Covered by Use Cases         Server            
          PMIx_server_register_client  Not Covered by Use Cases         Server            
          PMIx_server_register_nspace  Not Covered by Use Cases         Server            
        PMIx_server_setup_application  Not Covered by Use Cases         Server            
               PMIx_server_setup_fork  Not Covered by Use Cases         Server            
      PMIx_server_setup_local_support  Not Covered by Use Cases         Server            
-         PMIx_tool_connect_to_server  Not Covered by Use Cases         Server            
               pmix_server_abort_fn_t  Not Covered by Use Cases         Server            
               pmix_server_alloc_fn_t  Not Covered by Use Cases         Server            
    pmix_server_client_connected_fn_t  Not Covered by Use Cases         Server            
@@ -714,12 +713,4 @@ Percentage of Non-blocking interfaces covered by use cases: 0.0%
     pmix_server_tool_connection_fn_t  Not Covered by Use Cases         Server            
           pmix_server_unpublish_fn_t  Not Covered by Use Cases         Server            
       pmix_server_validate_cred_fn_t  Not Covered by Use Cases         Server            
-                       PMIx_Query_nb           Not in Standard         Client            
-                          pmix_app_t           Not in Standard         Client            
-                        pmix_envar_t           Not in Standard         Client            
-                         pmix_info_t           Not in Standard         Client            
-                         pmix_proc_t           Not in Standard         Client            
-                       pmix_status_t           Not in Standard         Client            
-                    PMIx_Server_init           Not in Standard         Server            
-            PMIx_tool_connect_server           Not in Standard         Server            
 #+end_example
