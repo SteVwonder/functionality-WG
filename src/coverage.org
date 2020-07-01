@@ -236,6 +236,47 @@ grep -oEe '^[ ]*\*[ ]*(PMIx|pmix|Pmix|PMIX_DATA_BUFFER)_[a-zA-Z_]+' ./coverage-d
 | pmix_status_t                   |
 | PMIx_Validate_credential        |
 | pmix_validation_cbfunc_t        |
+* Functions/APIs in the use cases
+** Automated
+- Grab a copy of the use case markdown from github: https://github.com/pmix/pmix-standard/issues?q=is%3Aopen+is%3Aissue+label%3A%22Use+Case%22
+- Grab a copy of the use case markdown from google drive (if that is newer): https://drive.google.com/file/d/18EgCHLx4OppI7CegQZGI8_5DFPngYuaV/view?usp=sharing
+
+- Extract the interfaces
+#+begin_src shell :results output table replace
+grep -oEe '(PMIx|pmix|Pmix)_[a-zA-Z_]+' ./coverage-data/use-cases/*.md \
+  | sed -E 's/^.*://' \
+  | sort --ignore-case | uniq
+#+end_src
+
+#+tblname: usecase_funcs
+#+RESULTS:
+| pmix_app_t                          |
+| PMIx_Commit                         |
+| PMIx_Deregister_event_handler       |
+| pmix_envar_t                        |
+| pmix_event_notification_cbfunc_fn_t |
+| PMIx_Fence                          |
+| PMIx_Get                            |
+| pmix_info_t                         |
+| PMIx_Init                           |
+| PMIx_IOF_deregister                 |
+| PMIx_IOF_pull                       |
+| PMIx_IOF_push                       |
+| PMIx_Notify_event                   |
+| pmix_proc_t                         |
+| PMIx_Put                            |
+| PMIx_Query_info                     |
+| PMIx_Query_nb                       |
+| PMIx_Register_event_handler         |
+| pmix_server_dmodex_req_fn_t         |
+| PMIx_server_dmodex_request          |
+| PMIx_Server_init                    |
+| PMIx_server_IOF_deliver             |
+| PMIx_Spawn                          |
+| pmix_status_t                       |
+| PMIx_tool_connect_server            |
+| PMIx_tool_init                      |
+
 * PMI Lineage
 ** PMI1
 #+begin_src shell :results output table replace
@@ -446,17 +487,21 @@ echo $tbl | sed -E 's/(PMI2_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
 
 
 * Comparison
-#+begin_src python :var val=1 :var standards_funcs=standards_funcs rfc_funcs=rfc_funcs pmi1_pmix=pmi1_pmix pmi2_pmix=pmi2_pmix :exports both :results output
+#+begin_src python :var val=1 :var standards_funcs=standards_funcs rfc_funcs=rfc_funcs usecase_funcs=usecase_funcs pmi1_pmix=pmi1_pmix pmi2_pmix=pmi2_pmix :exports both :results output
   import re
   import itertools
   import pandas as pd
 
   standards_funcs = set([ x[0] for x in standards_funcs[1:]])
-  rfc_funcs = set([ x[0] for x in rfc_funcs])
+  #rfc_funcs = set([ x[0] for x in rfc_funcs])
+  usecase_funcs = set([ x[0] for x in usecase_funcs])
   data = []
-  data.extend([(x, "Covered by RFCs") for x in standards_funcs.intersection(rfc_funcs)])
-  data.extend([(x, "Not Covered by RFCs") for x in standards_funcs.difference(rfc_funcs)])
-  data.extend([(x, "Not in Standard") for x in rfc_funcs.difference(standards_funcs)])
+  #data.extend([(x, "Covered by RFCs") for x in standards_funcs.intersection(rfc_funcs)])
+  #data.extend([(x, "Not Covered by RFCs") for x in standards_funcs.difference(rfc_funcs)])
+  #data.extend([(x, "Not in Standard") for x in rfc_funcs.difference(standards_funcs)])
+  data.extend([(x, "Covered by Use Cases") for x in standards_funcs.intersection(usecase_funcs)])
+  data.extend([(x, "Not Covered by Use Cases") for x in standards_funcs.difference(usecase_funcs)])
+  data.extend([(x, "Not in Standard") for x in usecase_funcs.difference(standards_funcs)])
   df = pd.DataFrame.from_records(data, columns=('Function', 'Group'))
   def categorize_functions(x):
       if x.endswith("_nb") and x[:-3] in standards_funcs:
@@ -470,7 +515,7 @@ echo $tbl | sed -E 's/(PMI2_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
       else:
           return 'Client'
   df['Type'] = df['Function'].map(categorize_functions)
-  df.loc[df['Type'] == 'Non-blocking']['Group'] = 'Covered by RFCs'
+  #df.loc[df['Type'] == 'Non-blocking']['Group'] = 'Non-blocking'
 
   pmi1_df = pd.DataFrame.from_records(pmi1_pmix, columns=["PMI", "PMIx"])
   pmi1_df['Version'] = 1
@@ -497,11 +542,12 @@ echo $tbl | sed -E 's/(PMI2_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
 
   df.sort_values(['Group', 'Type', 'PMI Lineage', 'Function'], inplace=True)
   def percent_covered(df):
-      return 100 * df[df.Group == 'Covered by RFCs'].size / float(df[df.Group != 'Not in Standard'].size)
-  print "Percentage of interfaces covered by notes: {:.1f}%".format(percent_covered(df))
-  print "Percentage of Client interfaces covered by notes: {:.1f}%".format(percent_covered(df[df.Type == 'Client']))
-  print "Percentage of Server interfaces covered by notes: {:.1f}%".format(percent_covered(df[df.Type == 'Server']))
-  print "Percentage of Callback interfaces covered by notes: {:.1f}%".format(percent_covered(df[df.Type == 'Callback']))
+      return 100 * df[df.Group == 'Covered by Use Cases'].size / float(df[df.Group != 'Not in Standard'].size)
+  print("Percentage of interfaces covered by use cases: {:.1f}%".format(percent_covered(df)))
+  print("Percentage of Client interfaces covered by use cases: {:.1f}%".format(percent_covered(df[df.Type == 'Client'])))
+  print("Percentage of Server interfaces covered by use cases: {:.1f}%".format(percent_covered(df[df.Type == 'Server'])))
+  print("Percentage of Callback interfaces covered by use cases: {:.1f}%".format(percent_covered(df[df.Type == 'Callback'])))
+  print("Percentage of Non-blocking interfaces covered by use cases: {:.1f}%".format(percent_covered(df[df.Type == 'Non-blocking'])))
 
   with pd.option_context(
           'display.max_rows', None,
@@ -515,158 +561,169 @@ echo $tbl | sed -E 's/(PMI2_)(.*)/\1\2 PMIx_\2/' | sed 's/PMIx_KVS/PMIx/'
 
 #+RESULTS:
 #+begin_example
-set(['PMIx_Spawn', 'None', 'PMIx_Initialized', 'PMIx_Unpublish', 'PMIx_Publish', 'PMIx_Init', 'PMIx_Put', 'PMIx_Finalize', 'PMIx_Abort', 'PMIx_Lookup', 'PMIx_Commit', 'PMIx_Fence', 'PMIx_Get'])
-set(['PMIx_Spawn', 'None', 'PMIx_Disconnect', 'PMIx_Initialized', 'PMIx_Connect', 'PMIx_Unpublish', 'PMIx_Publish', 'PMIx_Init', 'PMIx_Put', 'PMIx_Finalize', 'PMIx_Abort', 'PMIx_Init ', 'PMIx_Lookup', 'PMIx_Fence', 'PMIx_Get'])
-Percentage of interfaces covered by notes: 32.1%
-Percentage of Client interfaces covered by notes: 56.0%
-Percentage of Server interfaces covered by notes: 17.4%
-Percentage of Callback interfaces covered by notes: 16.7%
-                            Function                Group           Type PMI Lineage
-            pmix_credential_cbfunc_t      Covered by RFCs       Callback            
-                   pmix_iof_cbfunc_t      Covered by RFCs       Callback            
-            pmix_validation_cbfunc_t      Covered by RFCs       Callback            
-          PMIX_DATA_BUFFER_CONSTRUCT      Covered by RFCs         Client            
-             PMIX_DATA_BUFFER_CREATE      Covered by RFCs         Client            
-           PMIX_DATA_BUFFER_DESTRUCT      Covered by RFCs         Client            
-            PMIX_DATA_BUFFER_RELEASE      Covered by RFCs         Client            
-                      PMIx_Data_copy      Covered by RFCs         Client            
-              PMIx_Data_copy_payload      Covered by RFCs         Client            
-                      PMIx_Data_pack      Covered by RFCs         Client            
-                     PMIx_Data_print      Covered by RFCs         Client            
-                    PMIx_Data_unpack      Covered by RFCs         Client            
-       PMIx_Deregister_event_handler      Covered by RFCs         Client            
-                 PMIx_Get_credential      Covered by RFCs         Client            
-                PMIx_Group_construct      Covered by RFCs         Client            
-                 PMIx_Group_destruct      Covered by RFCs         Client            
-                   PMIx_Group_invite      Covered by RFCs         Client            
-                     PMIx_Group_join      Covered by RFCs         Client            
-                    PMIx_Group_leave      Covered by RFCs         Client            
-                 PMIx_IOF_deregister      Covered by RFCs         Client            
-                       PMIx_IOF_pull      Covered by RFCs         Client            
-                       PMIx_IOF_push      Covered by RFCs         Client            
-                            PMIx_Log      Covered by RFCs         Client            
-                   PMIx_Notify_event      Covered by RFCs         Client            
-                  PMIx_Query_info_nb      Covered by RFCs         Client            
-         PMIx_Register_event_handler      Covered by RFCs         Client            
-            PMIx_Validate_credential      Covered by RFCs         Client            
-                            PMIx_Get      Covered by RFCs         Client     pmi 1&2
-                           PMIx_Init      Covered by RFCs         Client     pmi 1&2
-                            PMIx_Put      Covered by RFCs         Client     pmi 1&2
-                          PMIx_Spawn      Covered by RFCs         Client     pmi 1&2
-             PMIx_Group_construct_nb      Covered by RFCs   Non-blocking            
-                PMIx_Group_invite_nb      Covered by RFCs   Non-blocking            
-                  PMIx_Group_join_nb      Covered by RFCs   Non-blocking            
-                 PMIx_Group_leave_nb      Covered by RFCs   Non-blocking            
-                 PMIx_Job_control_nb      Covered by RFCs   Non-blocking            
-             PMIx_Process_monitor_nb      Covered by RFCs   Non-blocking            
-             PMIx_server_IOF_deliver      Covered by RFCs         Server            
-       PMIx_server_collect_inventory      Covered by RFCs         Server            
-                    PMIx_server_init      Covered by RFCs         Server            
-       PMIx_server_setup_application      Covered by RFCs         Server            
-     PMIx_server_setup_local_support      Covered by RFCs         Server            
-                pmix_server_iof_fn_t      Covered by RFCs         Server            
-        pmix_server_job_control_fn_t      Covered by RFCs         Server            
-      pmix_server_validate_cred_fn_t      Covered by RFCs         Server            
-            pmix_connection_cbfunc_t  Not Covered by RFCs       Callback            
-           pmix_dmodex_response_fn_t  Not Covered by RFCs       Callback            
- pmix_event_notification_cbfunc_fn_t  Not Covered by RFCs       Callback            
-            pmix_evhdlr_reg_cbfunc_t  Not Covered by RFCs       Callback            
-              pmix_hdlr_reg_cbfunc_t  Not Covered by RFCs       Callback            
-                  pmix_info_cbfunc_t  Not Covered by RFCs       Callback            
-                pmix_lookup_cbfunc_t  Not Covered by RFCs       Callback            
-                 pmix_modex_cbfunc_t  Not Covered by RFCs       Callback            
-              pmix_notification_fn_t  Not Covered by RFCs       Callback            
-                    pmix_op_cbfunc_t  Not Covered by RFCs       Callback            
-               pmix_release_cbfunc_t  Not Covered by RFCs       Callback            
-     pmix_setup_application_cbfunc_t  Not Covered by RFCs       Callback            
-                 pmix_spawn_cbfunc_t  Not Covered by RFCs       Callback            
-       pmix_tool_connection_cbfunc_t  Not Covered by RFCs       Callback            
-                 pmix_value_cbfunc_t  Not Covered by RFCs       Callback            
-               PMIX_DATA_BUFFER_LOAD  Not Covered by RFCs         Client            
-             PMIX_DATA_BUFFER_UNLOAD  Not Covered by RFCs         Client            
-             PMIx_Allocation_request  Not Covered by RFCs         Client            
-                    PMIx_Get_version  Not Covered by RFCs         Client            
-                    PMIx_Job_control  Not Covered by RFCs         Client            
-                PMIx_Process_monitor  Not Covered by RFCs         Client            
-            PMIx_Register_attributes  Not Covered by RFCs         Client            
-                  PMIx_Resolve_nodes  Not Covered by RFCs         Client            
-                  PMIx_Resolve_peers  Not Covered by RFCs         Client            
-                 PMIx_Store_internal  Not Covered by RFCs         Client            
-                  PMIx_tool_finalize  Not Covered by RFCs         Client            
-                      PMIx_tool_init  Not Covered by RFCs         Client            
-                          PMIx_Abort  Not Covered by RFCs         Client     pmi 1&2
-                          PMIx_Fence  Not Covered by RFCs         Client     pmi 1&2
-                       PMIx_Finalize  Not Covered by RFCs         Client     pmi 1&2
-                    PMIx_Initialized  Not Covered by RFCs         Client     pmi 1&2
-                         PMIx_Lookup  Not Covered by RFCs         Client     pmi 1&2
-                        PMIx_Publish  Not Covered by RFCs         Client     pmi 1&2
-                      PMIx_Unpublish  Not Covered by RFCs         Client     pmi 1&2
-                         PMIx_Commit  Not Covered by RFCs         Client        pmi1
-                        PMIx_Connect  Not Covered by RFCs         Client        pmi2
-                     PMIx_Disconnect  Not Covered by RFCs         Client        pmi2
-          PMIx_Allocation_request_nb  Not Covered by RFCs   Non-blocking            
-                     PMIx_Connect_nb  Not Covered by RFCs   Non-blocking            
-                  PMIx_Disconnect_nb  Not Covered by RFCs   Non-blocking            
-                       PMIx_Fence_nb  Not Covered by RFCs   Non-blocking            
-                         PMIx_Get_nb  Not Covered by RFCs   Non-blocking            
-              PMIx_Group_destruct_nb  Not Covered by RFCs   Non-blocking            
-                         PMIx_Log_nb  Not Covered by RFCs   Non-blocking            
-                      PMIx_Lookup_nb  Not Covered by RFCs   Non-blocking            
-                     PMIx_Publish_nb  Not Covered by RFCs   Non-blocking            
-                       PMIx_Spawn_nb  Not Covered by RFCs   Non-blocking            
-                   PMIx_Unpublish_nb  Not Covered by RFCs   Non-blocking            
-         PMIx_Alloc_directive_string  Not Covered by RFCs  Serialization            
-              PMIx_Data_range_string  Not Covered by RFCs  Serialization            
-               PMIx_Data_type_string  Not Covered by RFCs  Serialization            
-                   PMIx_Error_string  Not Covered by RFCs  Serialization            
-             PMIx_IOF_channel_string  Not Covered by RFCs  Serialization            
-         PMIx_Info_directives_string  Not Covered by RFCs  Serialization            
-             PMIx_Persistence_string  Not Covered by RFCs  Serialization            
-              PMIx_Proc_state_string  Not Covered by RFCs  Serialization            
-                   PMIx_Scope_string  Not Covered by RFCs  Serialization            
-                   PMIx_generate_ppn  Not Covered by RFCs         Server            
-                 PMIx_generate_regex  Not Covered by RFCs         Server            
-       PMIx_server_deliver_inventory  Not Covered by RFCs         Server            
-       PMIx_server_deregister_client  Not Covered by RFCs         Server            
-       PMIx_server_deregister_fabric  Not Covered by RFCs         Server            
-       PMIx_server_deregister_nspace  Not Covered by RFCs         Server            
-          PMIx_server_dmodex_request  Not Covered by RFCs         Server            
-                PMIx_server_finalize  Not Covered by RFCs         Server            
-               PMIx_server_get_index  Not Covered by RFCs         Server            
-         PMIx_server_get_vertex_info  Not Covered by RFCs         Server            
-         PMIx_server_register_client  Not Covered by RFCs         Server            
-         PMIx_server_register_fabric  Not Covered by RFCs         Server            
-         PMIx_server_register_nspace  Not Covered by RFCs         Server            
-              PMIx_server_setup_fork  Not Covered by RFCs         Server            
-         PMIx_tool_connect_to_server  Not Covered by RFCs         Server            
-              pmix_server_abort_fn_t  Not Covered by RFCs         Server            
-              pmix_server_alloc_fn_t  Not Covered by RFCs         Server            
-   pmix_server_client_connected_fn_t  Not Covered by RFCs         Server            
-   pmix_server_client_finalized_fn_t  Not Covered by RFCs         Server            
-            pmix_server_connect_fn_t  Not Covered by RFCs         Server            
-  pmix_server_deregister_events_fn_t  Not Covered by RFCs         Server            
-         pmix_server_disconnect_fn_t  Not Covered by RFCs         Server            
-         pmix_server_dmodex_req_fn_t  Not Covered by RFCs         Server            
-            pmix_server_fencenb_fn_t  Not Covered by RFCs         Server            
-           pmix_server_get_cred_fn_t  Not Covered by RFCs         Server            
-           pmix_server_listener_fn_t  Not Covered by RFCs         Server            
-                pmix_server_log_fn_t  Not Covered by RFCs         Server            
-             pmix_server_lookup_fn_t  Not Covered by RFCs         Server            
-                pmix_server_module_t  Not Covered by RFCs         Server            
-            pmix_server_monitor_fn_t  Not Covered by RFCs         Server            
-       pmix_server_notify_event_fn_t  Not Covered by RFCs         Server            
-            pmix_server_publish_fn_t  Not Covered by RFCs         Server            
-              pmix_server_query_fn_t  Not Covered by RFCs         Server            
-    pmix_server_register_events_fn_t  Not Covered by RFCs         Server            
-              pmix_server_spawn_fn_t  Not Covered by RFCs         Server            
-              pmix_server_stdin_fn_t  Not Covered by RFCs         Server            
-    pmix_server_tool_connection_fn_t  Not Covered by RFCs         Server            
-          pmix_server_unpublish_fn_t  Not Covered by RFCs         Server            
-     Pmix_setup_application_cbfunc_t      Not in Standard       Callback            
-                          PMIx_Alloc      Not in Standard         Client            
-                 PMIx_Forward_envars      Not in Standard         Client            
-                      PMIx_Heartbeat      Not in Standard         Client            
-                       pmix_status_t      Not in Standard         Client            
-            Pmix_server_monitor_fn_t      Not in Standard         Server            
-              Pmix_server_stdin_fn_t      Not in Standard         Server            
+{'PMIx_Abort', 'PMIx_Init', 'PMIx_Put', 'PMIx_Fence', 'PMIx_Spawn', 'PMIx_Get', 'PMIx_Unpublish', 'PMIx_Publish', 'PMIx_Initialized', 'None', 'PMIx_Finalize', 'PMIx_Lookup', 'PMIx_Commit'}
+{'PMIx_Abort', 'PMIx_Init', 'PMIx_Init ', 'PMIx_Put', 'PMIx_Fence', 'PMIx_Spawn', 'PMIx_Get', 'PMIx_Unpublish', 'PMIx_Connect', 'PMIx_Publish', 'PMIx_Initialized', 'None', 'PMIx_Finalize', 'PMIx_Lookup', 'PMIx_Disconnect'}
+Percentage of interfaces covered by use cases: 12.1%
+Percentage of Client interfaces covered by use cases: 28.0%
+Percentage of Server interfaces covered by use cases: 6.8%
+Percentage of Callback interfaces covered by use cases: 5.6%
+Percentage of Non-blocking interfaces covered by use cases: 0.0%
+                            Function                     Group           Type PMI Lineage
+ pmix_event_notification_cbfunc_fn_t      Covered by Use Cases       Callback            
+       PMIx_Deregister_event_handler      Covered by Use Cases         Client            
+                 PMIx_IOF_deregister      Covered by Use Cases         Client            
+                       PMIx_IOF_pull      Covered by Use Cases         Client            
+                       PMIx_IOF_push      Covered by Use Cases         Client            
+                   PMIx_Notify_event      Covered by Use Cases         Client            
+                     PMIx_Query_info      Covered by Use Cases         Client            
+         PMIx_Register_event_handler      Covered by Use Cases         Client            
+                      PMIx_tool_init      Covered by Use Cases         Client            
+                          PMIx_Fence      Covered by Use Cases         Client     pmi 1&2
+                            PMIx_Get      Covered by Use Cases         Client     pmi 1&2
+                           PMIx_Init      Covered by Use Cases         Client     pmi 1&2
+                            PMIx_Put      Covered by Use Cases         Client     pmi 1&2
+                          PMIx_Spawn      Covered by Use Cases         Client     pmi 1&2
+                         PMIx_Commit      Covered by Use Cases         Client        pmi1
+             PMIx_server_IOF_deliver      Covered by Use Cases         Server            
+          PMIx_server_dmodex_request      Covered by Use Cases         Server            
+         pmix_server_dmodex_req_fn_t      Covered by Use Cases         Server            
+            pmix_connection_cbfunc_t  Not Covered by Use Cases       Callback            
+            pmix_credential_cbfunc_t  Not Covered by Use Cases       Callback            
+           pmix_dmodex_response_fn_t  Not Covered by Use Cases       Callback            
+            pmix_evhdlr_reg_cbfunc_t  Not Covered by Use Cases       Callback            
+              pmix_hdlr_reg_cbfunc_t  Not Covered by Use Cases       Callback            
+                  pmix_info_cbfunc_t  Not Covered by Use Cases       Callback            
+                   pmix_iof_cbfunc_t  Not Covered by Use Cases       Callback            
+                pmix_lookup_cbfunc_t  Not Covered by Use Cases       Callback            
+                 pmix_modex_cbfunc_t  Not Covered by Use Cases       Callback            
+              pmix_notification_fn_t  Not Covered by Use Cases       Callback            
+                    pmix_op_cbfunc_t  Not Covered by Use Cases       Callback            
+               pmix_release_cbfunc_t  Not Covered by Use Cases       Callback            
+     pmix_setup_application_cbfunc_t  Not Covered by Use Cases       Callback            
+                 pmix_spawn_cbfunc_t  Not Covered by Use Cases       Callback            
+       pmix_tool_connection_cbfunc_t  Not Covered by Use Cases       Callback            
+            pmix_validation_cbfunc_t  Not Covered by Use Cases       Callback            
+                 pmix_value_cbfunc_t  Not Covered by Use Cases       Callback            
+             PMIx_Allocation_request  Not Covered by Use Cases         Client            
+                      PMIx_Data_copy  Not Covered by Use Cases         Client            
+              PMIx_Data_copy_payload  Not Covered by Use Cases         Client            
+                      PMIx_Data_pack  Not Covered by Use Cases         Client            
+                     PMIx_Data_print  Not Covered by Use Cases         Client            
+                    PMIx_Data_unpack  Not Covered by Use Cases         Client            
+              PMIx_Fabric_deregister  Not Covered by Use Cases         Client            
+        PMIx_Fabric_get_device_index  Not Covered by Use Cases         Client            
+         PMIx_Fabric_get_vertex_info  Not Covered by Use Cases         Client            
+                PMIx_Fabric_register  Not Covered by Use Cases         Client            
+                  PMIx_Fabric_update  Not Covered by Use Cases         Client            
+             PMIx_Get_attribute_name  Not Covered by Use Cases         Client            
+                 PMIx_Get_credential  Not Covered by Use Cases         Client            
+                    PMIx_Get_version  Not Covered by Use Cases         Client            
+                PMIx_Group_construct  Not Covered by Use Cases         Client            
+                 PMIx_Group_destruct  Not Covered by Use Cases         Client            
+                   PMIx_Group_invite  Not Covered by Use Cases         Client            
+                     PMIx_Group_join  Not Covered by Use Cases         Client            
+                    PMIx_Group_leave  Not Covered by Use Cases         Client            
+                    PMIx_Job_control  Not Covered by Use Cases         Client            
+                            PMIx_Log  Not Covered by Use Cases         Client            
+                PMIx_Process_monitor  Not Covered by Use Cases         Client            
+            PMIx_Register_attributes  Not Covered by Use Cases         Client            
+                  PMIx_Resolve_nodes  Not Covered by Use Cases         Client            
+                  PMIx_Resolve_peers  Not Covered by Use Cases         Client            
+                 PMIx_Store_internal  Not Covered by Use Cases         Client            
+            PMIx_Validate_credential  Not Covered by Use Cases         Client            
+                  PMIx_tool_finalize  Not Covered by Use Cases         Client            
+                          PMIx_Abort  Not Covered by Use Cases         Client     pmi 1&2
+                       PMIx_Finalize  Not Covered by Use Cases         Client     pmi 1&2
+                    PMIx_Initialized  Not Covered by Use Cases         Client     pmi 1&2
+                         PMIx_Lookup  Not Covered by Use Cases         Client     pmi 1&2
+                        PMIx_Publish  Not Covered by Use Cases         Client     pmi 1&2
+                      PMIx_Unpublish  Not Covered by Use Cases         Client     pmi 1&2
+                        PMIx_Connect  Not Covered by Use Cases         Client        pmi2
+                     PMIx_Disconnect  Not Covered by Use Cases         Client        pmi2
+          PMIx_Allocation_request_nb  Not Covered by Use Cases   Non-blocking            
+                     PMIx_Connect_nb  Not Covered by Use Cases   Non-blocking            
+                  PMIx_Disconnect_nb  Not Covered by Use Cases   Non-blocking            
+           PMIx_Fabric_deregister_nb  Not Covered by Use Cases   Non-blocking            
+     PMIx_Fabric_get_device_index_nb  Not Covered by Use Cases   Non-blocking            
+      PMIx_Fabric_get_vertex_info_nb  Not Covered by Use Cases   Non-blocking            
+             PMIx_Fabric_register_nb  Not Covered by Use Cases   Non-blocking            
+               PMIx_Fabric_update_nb  Not Covered by Use Cases   Non-blocking            
+                       PMIx_Fence_nb  Not Covered by Use Cases   Non-blocking            
+              PMIx_Get_credential_nb  Not Covered by Use Cases   Non-blocking            
+                         PMIx_Get_nb  Not Covered by Use Cases   Non-blocking            
+             PMIx_Group_construct_nb  Not Covered by Use Cases   Non-blocking            
+              PMIx_Group_destruct_nb  Not Covered by Use Cases   Non-blocking            
+                PMIx_Group_invite_nb  Not Covered by Use Cases   Non-blocking            
+                  PMIx_Group_join_nb  Not Covered by Use Cases   Non-blocking            
+                 PMIx_Group_leave_nb  Not Covered by Use Cases   Non-blocking            
+                 PMIx_Job_control_nb  Not Covered by Use Cases   Non-blocking            
+                         PMIx_Log_nb  Not Covered by Use Cases   Non-blocking            
+                      PMIx_Lookup_nb  Not Covered by Use Cases   Non-blocking            
+             PMIx_Process_monitor_nb  Not Covered by Use Cases   Non-blocking            
+                     PMIx_Publish_nb  Not Covered by Use Cases   Non-blocking            
+                  PMIx_Query_info_nb  Not Covered by Use Cases   Non-blocking            
+                       PMIx_Spawn_nb  Not Covered by Use Cases   Non-blocking            
+                   PMIx_Unpublish_nb  Not Covered by Use Cases   Non-blocking            
+         PMIx_Validate_credential_nb  Not Covered by Use Cases   Non-blocking            
+         PMIx_Alloc_directive_string  Not Covered by Use Cases  Serialization            
+              PMIx_Data_range_string  Not Covered by Use Cases  Serialization            
+               PMIx_Data_type_string  Not Covered by Use Cases  Serialization            
+                   PMIx_Error_string  Not Covered by Use Cases  Serialization            
+           PMIx_Get_attribute_string  Not Covered by Use Cases  Serialization            
+             PMIx_IOF_channel_string  Not Covered by Use Cases  Serialization            
+         PMIx_Info_directives_string  Not Covered by Use Cases  Serialization            
+               PMIx_Job_state_string  Not Covered by Use Cases  Serialization            
+              PMIx_Link_state_string  Not Covered by Use Cases  Serialization            
+             PMIx_Persistence_string  Not Covered by Use Cases  Serialization            
+              PMIx_Proc_state_string  Not Covered by Use Cases  Serialization            
+                   PMIx_Scope_string  Not Covered by Use Cases  Serialization            
+                   PMIx_generate_ppn  Not Covered by Use Cases         Server            
+                 PMIx_generate_regex  Not Covered by Use Cases         Server            
+       PMIx_server_collect_inventory  Not Covered by Use Cases         Server            
+       PMIx_server_deliver_inventory  Not Covered by Use Cases         Server            
+       PMIx_server_deregister_client  Not Covered by Use Cases         Server            
+       PMIx_server_deregister_nspace  Not Covered by Use Cases         Server            
+                PMIx_server_finalize  Not Covered by Use Cases         Server            
+                    PMIx_server_init  Not Covered by Use Cases         Server            
+         PMIx_server_register_client  Not Covered by Use Cases         Server            
+         PMIx_server_register_nspace  Not Covered by Use Cases         Server            
+       PMIx_server_setup_application  Not Covered by Use Cases         Server            
+              PMIx_server_setup_fork  Not Covered by Use Cases         Server            
+     PMIx_server_setup_local_support  Not Covered by Use Cases         Server            
+         PMIx_tool_connect_to_server  Not Covered by Use Cases         Server            
+              pmix_server_abort_fn_t  Not Covered by Use Cases         Server            
+              pmix_server_alloc_fn_t  Not Covered by Use Cases         Server            
+   pmix_server_client_connected_fn_t  Not Covered by Use Cases         Server            
+   pmix_server_client_finalized_fn_t  Not Covered by Use Cases         Server            
+            pmix_server_connect_fn_t  Not Covered by Use Cases         Server            
+  pmix_server_deregister_events_fn_t  Not Covered by Use Cases         Server            
+         pmix_server_disconnect_fn_t  Not Covered by Use Cases         Server            
+             pmix_server_fabric_fn_t  Not Covered by Use Cases         Server            
+            pmix_server_fencenb_fn_t  Not Covered by Use Cases         Server            
+           pmix_server_get_cred_fn_t  Not Covered by Use Cases         Server            
+                pmix_server_grp_fn_t  Not Covered by Use Cases         Server            
+                pmix_server_iof_fn_t  Not Covered by Use Cases         Server            
+        pmix_server_job_control_fn_t  Not Covered by Use Cases         Server            
+           pmix_server_listener_fn_t  Not Covered by Use Cases         Server            
+                pmix_server_log_fn_t  Not Covered by Use Cases         Server            
+             pmix_server_lookup_fn_t  Not Covered by Use Cases         Server            
+                pmix_server_module_t  Not Covered by Use Cases         Server            
+            pmix_server_monitor_fn_t  Not Covered by Use Cases         Server            
+       pmix_server_notify_event_fn_t  Not Covered by Use Cases         Server            
+            pmix_server_publish_fn_t  Not Covered by Use Cases         Server            
+              pmix_server_query_fn_t  Not Covered by Use Cases         Server            
+    pmix_server_register_events_fn_t  Not Covered by Use Cases         Server            
+              pmix_server_spawn_fn_t  Not Covered by Use Cases         Server            
+              pmix_server_stdin_fn_t  Not Covered by Use Cases         Server            
+    pmix_server_tool_connection_fn_t  Not Covered by Use Cases         Server            
+          pmix_server_unpublish_fn_t  Not Covered by Use Cases         Server            
+      pmix_server_validate_cred_fn_t  Not Covered by Use Cases         Server            
+                       PMIx_Query_nb           Not in Standard         Client            
+                          pmix_app_t           Not in Standard         Client            
+                        pmix_envar_t           Not in Standard         Client            
+                         pmix_info_t           Not in Standard         Client            
+                         pmix_proc_t           Not in Standard         Client            
+                       pmix_status_t           Not in Standard         Client            
+                    PMIx_Server_init           Not in Standard         Server            
+            PMIx_tool_connect_server           Not in Standard         Server            
 #+end_example
