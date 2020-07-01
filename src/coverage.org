@@ -4,7 +4,7 @@
 * Functions/APIs in the Standard
 #+begin_src shell :dir ~/Repositories/pmix/pmix-standard/ :results output table replace :colnames yes
 echo "Function_Name Source_File"
-grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort --ignore-case
+grep -e 'declareapi{' ./*.tex | sed -E 's/(.*):\\declareapi\{(.*)\}/\2 \1/g' | sort --ignore-case
 #+end_src
 
 #+tblname: standards_funcs
@@ -19,12 +19,6 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | pmix_connection_cbfunc_t            | ./Chap_API_Struct.tex         |
 | PMIx_Connect_nb                     | ./Chap_API_Proc_Mgmt.tex      |
 | pmix_credential_cbfunc_t            | ./Chap_API_Struct.tex         |
-| PMIX_DATA_BUFFER_CONSTRUCT          | ./Chap_API_Data_Mgmt.tex      |
-| PMIX_DATA_BUFFER_CREATE             | ./Chap_API_Data_Mgmt.tex      |
-| PMIX_DATA_BUFFER_DESTRUCT           | ./Chap_API_Data_Mgmt.tex      |
-| PMIX_DATA_BUFFER_LOAD               | ./Chap_API_Data_Mgmt.tex      |
-| PMIX_DATA_BUFFER_RELEASE            | ./Chap_API_Data_Mgmt.tex      |
-| PMIX_DATA_BUFFER_UNLOAD             | ./Chap_API_Data_Mgmt.tex      |
 | PMIx_Data_copy                      | ./Chap_API_Data_Mgmt.tex      |
 | PMIx_Data_copy_payload              | ./Chap_API_Data_Mgmt.tex      |
 | PMIx_Data_pack                      | ./Chap_API_Data_Mgmt.tex      |
@@ -39,13 +33,26 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | PMIx_Error_string                   | ./Chap_API_Struct.tex         |
 | pmix_event_notification_cbfunc_fn_t | ./Chap_API_Struct.tex         |
 | pmix_evhdlr_reg_cbfunc_t            | ./Chap_API_Struct.tex         |
+| PMIx_Fabric_deregister              | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_deregister_nb           | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_get_device_index        | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_get_device_index_nb     | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_get_vertex_info         | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_get_vertex_info_nb      | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_register                | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_register_nb             | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_update                  | ./Chap_API_Fabric.tex         |
+| PMIx_Fabric_update_nb               | ./Chap_API_Fabric.tex         |
 | PMIx_Fence                          | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Fence_nb                       | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Finalize                       | ./Chap_API_Init.tex           |
 | PMIx_generate_ppn                   | ./Chap_API_Server.tex         |
 | PMIx_generate_regex                 | ./Chap_API_Server.tex         |
+| PMIx_Get_attribute_name             | ./Chap_API_Struct.tex         |
+| PMIx_Get_attribute_string           | ./Chap_API_Struct.tex         |
 | PMIx_Get                            | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Get_credential                 | ./Chap_API_Security.tex       |
+| PMIx_Get_credential_nb              | ./Chap_API_Security.tex       |
 | PMIx_Get_nb                         | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Get_version                    | ./Chap_API_Init.tex           |
 | PMIx_Group_construct                | ./Chap_API_Sets_Groups.tex    |
@@ -70,10 +77,12 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | PMIx_IOF_push                       | ./Chap_API_Proc_Mgmt.tex      |
 | PMIx_Job_control                    | ./Chap_API_Job_Mgmt.tex       |
 | PMIx_Job_control_nb                 | ./Chap_API_Job_Mgmt.tex       |
+| PMIx_Job_state_string               | ./Chap_API_Struct.tex         |
+| PMIx_Link_state_string              | ./Chap_API_Struct.tex         |
 | PMIx_Log                            | ./Chap_API_Job_Mgmt.tex       |
 | PMIx_Log_nb                         | ./Chap_API_Job_Mgmt.tex       |
-| PMIx_Lookup                         | ./Chap_API_Key_Value_Mgmt.tex |
 | pmix_lookup_cbfunc_t                | ./Chap_API_Struct.tex         |
+| PMIx_Lookup                         | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Lookup_nb                      | ./Chap_API_Key_Value_Mgmt.tex |
 | pmix_modex_cbfunc_t                 | ./Chap_API_Struct.tex         |
 | pmix_notification_fn_t              | ./Chap_API_Struct.tex         |
@@ -86,6 +95,7 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | PMIx_Publish                        | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Publish_nb                     | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Put                            | ./Chap_API_Key_Value_Mgmt.tex |
+| PMIx_Query_info                     | ./Chap_API_Job_Mgmt.tex       |
 | PMIx_Query_info_nb                  | ./Chap_API_Job_Mgmt.tex       |
 | PMIx_Register_attributes            | ./Chap_API_Server.tex         |
 | PMIx_Register_event_handler         | ./Chap_API_Event.tex          |
@@ -102,16 +112,15 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | PMIx_server_deliver_inventory       | ./Chap_API_Server.tex         |
 | PMIx_server_deregister_client       | ./Chap_API_Server.tex         |
 | pmix_server_deregister_events_fn_t  | ./Chap_API_Server.tex         |
-| PMIx_server_deregister_fabric       | ./Chap_API_Scheduler.tex      |
 | PMIx_server_deregister_nspace       | ./Chap_API_Server.tex         |
 | pmix_server_disconnect_fn_t         | ./Chap_API_Server.tex         |
-| PMIx_server_dmodex_request          | ./Chap_API_Server.tex         |
 | pmix_server_dmodex_req_fn_t         | ./Chap_API_Server.tex         |
+| PMIx_server_dmodex_request          | ./Chap_API_Server.tex         |
+| pmix_server_fabric_fn_t             | ./Chap_API_Server.tex         |
 | pmix_server_fencenb_fn_t            | ./Chap_API_Server.tex         |
 | PMIx_server_finalize                | ./Chap_API_Init.tex           |
 | pmix_server_get_cred_fn_t           | ./Chap_API_Server.tex         |
-| PMIx_server_get_index               | ./Chap_API_Scheduler.tex      |
-| PMIx_server_get_vertex_info         | ./Chap_API_Scheduler.tex      |
+| pmix_server_grp_fn_t                | ./Chap_API_Server.tex         |
 | PMIx_server_init                    | ./Chap_API_Init.tex           |
 | PMIx_server_IOF_deliver             | ./Chap_API_Server.tex         |
 | pmix_server_iof_fn_t                | ./Chap_API_Server.tex         |
@@ -126,7 +135,6 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | pmix_server_query_fn_t              | ./Chap_API_Server.tex         |
 | PMIx_server_register_client         | ./Chap_API_Server.tex         |
 | pmix_server_register_events_fn_t    | ./Chap_API_Server.tex         |
-| PMIx_server_register_fabric         | ./Chap_API_Scheduler.tex      |
 | PMIx_server_register_nspace         | ./Chap_API_Server.tex         |
 | PMIx_server_setup_application       | ./Chap_API_Server.tex         |
 | PMIx_server_setup_fork              | ./Chap_API_Server.tex         |
@@ -137,8 +145,8 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | pmix_server_unpublish_fn_t          | ./Chap_API_Server.tex         |
 | pmix_server_validate_cred_fn_t      | ./Chap_API_Server.tex         |
 | pmix_setup_application_cbfunc_t     | ./Chap_API_Struct.tex         |
-| PMIx_Spawn                          | ./Chap_API_Proc_Mgmt.tex      |
 | pmix_spawn_cbfunc_t                 | ./Chap_API_Struct.tex         |
+| PMIx_Spawn                          | ./Chap_API_Proc_Mgmt.tex      |
 | PMIx_Spawn_nb                       | ./Chap_API_Proc_Mgmt.tex      |
 | PMIx_Store_internal                 | ./Chap_API_Key_Value_Mgmt.tex |
 | pmix_tool_connection_cbfunc_t       | ./Chap_API_Struct.tex         |
@@ -148,6 +156,7 @@ grep -e declareapi ./*.tex | sed -E 's/(.*):\\declareapi{(.*)}/\2 \1/g' | sort -
 | PMIx_Unpublish                      | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Unpublish_nb                   | ./Chap_API_Key_Value_Mgmt.tex |
 | PMIx_Validate_credential            | ./Chap_API_Security.tex       |
+| PMIx_Validate_credential_nb         | ./Chap_API_Security.tex       |
 | pmix_validation_cbfunc_t            | ./Chap_API_Struct.tex         |
 | pmix_value_cbfunc_t                 | ./Chap_API_Struct.tex         |
 * Functions/APIs in our Notes
