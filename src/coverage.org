@@ -266,15 +266,15 @@ grep -oEe '(PMIx|pmix|Pmix)_[a-zA-Z_]+' ./coverage-data/use-cases/*.md \
 | pmix_proc_t                         |
 | PMIx_Put                            |
 | PMIx_Query_info                     |
-| PMIx_Query_nb                       |
+| PMIx_Query_info_nb                  |
 | PMIx_Register_event_handler         |
 | pmix_server_dmodex_req_fn_t         |
 | PMIx_server_dmodex_request          |
-| PMIx_Server_init                    |
+| PMIx_server_init                    |
 | PMIx_server_IOF_deliver             |
 | PMIx_Spawn                          |
 | pmix_status_t                       |
-| PMIx_tool_connect_server            |
+| PMIx_tool_connect_to_server         |
 | PMIx_tool_init                      |
 
 * PMI Lineage

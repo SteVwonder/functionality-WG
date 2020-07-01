@@ -77,7 +77,7 @@ PMIx_tool_init
 PMIx_Register_event_handler
 PMIx_Spawn
 PMIx_Notify_event
-PMIx_tool_connect_server
+PMIx_tool_connect_to_server
 PMIx_Query_info
 PMIx_Get
 ```
@@ -144,8 +144,8 @@ Tools can benefit from a mechanism by which they may interact with a local PMIx 
 
 #### Interfaces
 ```
-PMIx_Query_nb
-PMIx_Server_init
+PMIx_Query_info_nb
+PMIx_server_init
 PMIx_Register_event_handler
 PMIx_Deregister_event_handler
 PMIx_Notify_event
