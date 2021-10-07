@@ -1,0 +1,38 @@
+#+TITLE: Functionality Slices Working Group
+#+DATE: May 13, 2021
+#+AUTHOR: Stephen Herbein, Josh Hursey, Swaroop Pophale
+# Disable underscore ”_” as subscript indication
+#+OPTIONS: ^:nil
+# Disable Outline/Table-of-Contents
+#+OPTIONS: toc:nil
+# Make the fonts look not terrible: https://tex.stackexchange.com/questions/55096/anti-aliasing-from-latex-to-pdf
+#+LATEX_HEADER: \usepackage{lmodern}
+
+* WG Summary
+ - *Problem:* Given the size and structure of the PMIx standard document, it can be difficult to find the PMIx components necessary for a given use case
+ - *Goal:* Provide a mechanism for focusing in on the aspects of the standard that are of interest to a particular user/use case
+ - *Proposed solution:* create an appendix with a list of high-level use cases and the PMIx APIs required to support them
+* Plans for 2021
+** Completed in Q1
+   - First vote for the Appendix with common use cases
+     - bootstrap (business card exchange)
+     - debuggers / tools
+     - hybrid programming models
+** Completed in Q2
+   - Created a PR for the MPI Sessions use case
+** Planned for Q3+
+ - Investigate additional use cases
+ - Extending existing use cases with server-side APIs
+ - Updating existing use cases based on changes to the standard
+* Call for Participation
+** Help Wanted
+ - Identifying use cases that we’ve missed
+ - Documenting use cases
+ - Reviewing documented use cases
+** How to Join
+ - Subscribe to our Google Group mailing list
+   - pmix-forum-wg-func-slices
+ - Weekly call
+   - Thursdays @ 9am PT / 12pm ET
+   - Webex info sent via mailing list
+   - Subscribe to the PMIx Calendar for the meeting 
