@@ -19,7 +19,7 @@
      - hybrid programming models
    - Posted a provisional PR for reading/voting
      - Covers ~21% of client-side interfaces
-   - Initial meeting to gauge interesting within the power community
+   - Initial meeting to gauge interest within the power community
 * Plans for 2021
  - Investigate additional use cases:
    - MPI sessions
